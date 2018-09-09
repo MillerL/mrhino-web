@@ -4,6 +4,8 @@ import List from 'antd-mobile/lib/list';
 // import { List } from 'antd-mobile/lib/list-view';
 import userIcon from '../res/user-default.png';
 import axios from 'axios'
+import '../css/users.css';
+import homeIcon from '../res/home-icon.png';
 import {Link} from 'react-router-dom';
 import ActivityIndicator from 'antd-mobile/lib/activity-indicator';
 const GETINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
@@ -50,7 +52,14 @@ class Users extends React.Component {
 	render() {
 
 		return <div className="main">
-			<List renderHeader={() => '用户列表'}>
+			<header className="header">
+				<Link to='/'>
+					<img src={homeIcon} className="homeIcon"/>
+				</Link>
+				用户列表
+			</header>
+
+			<List renderHeader={() => ''}>
 				{this.state.userListData.map((user,i) => <Item
 					key={i}
 					thumb={userIcon}
