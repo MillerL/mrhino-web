@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import WhiteSpace from 'antd-mobile/lib/white-space';
 import List from 'antd-mobile/lib/list';
+import moment from 'moment';
 // import { List } from 'antd-mobile/lib/list-view';
 import userIcon from '../res/user-default.png';
 import axios from 'axios'
@@ -65,9 +66,16 @@ class Users extends React.Component {
 					thumb={userIcon}
 					arrow="horizontal"
 					onClick={this.gotoShowUserInfo(user)}
-				>{user.Name}</Item>)}
+				>{user.Name} <span style={{fontSize:12}}>{this.formatDate(user.createdAt)}</span></Item>)}
 			</List>
 		</div>
+
+	}
+
+	formatDate(date){
+		if (!date)return '';
+		var fmt = 'YYYY-MM-DD h:mm:ss';
+		return moment(date).format(fmt);
 	}
 }
 
