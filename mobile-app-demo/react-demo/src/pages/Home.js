@@ -5,13 +5,17 @@ import WingBlank from 'antd-mobile/lib/wing-blank';
 import WhiteSpace from 'antd-mobile/lib/white-space';
 import Modal from 'antd-mobile/lib/modal';
 import Button from 'antd-mobile/lib/button';
+import InputItem from 'antd-mobile/lib/input-item';
+import Toast from 'antd-mobile/lib/toast';
 import ActivityIndicator from 'antd-mobile/lib/activity-indicator';
 import '../css/App.css';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 import '../utils/config';
 
-const GETINFO_URL = 'http://39.106.52.140:1337/Mesuattest?_limit=1&_start=0';
+// const GETINFO_URL = 'http://39.106.52.140:1337/Mesuattest?_limit=1&_start=0'; //测试用API
+const defaultIp = 'http://192.168.1.47:23412'; //默认IP
+const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
 const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
 
 function closest(el, selector) {
@@ -31,7 +35,10 @@ class Home extends Component {
 		this.state = {
 			modal1: false, //popup
 			animating: false, //loaidng
-			userInfo:{}
+			userInfo:{},
+
+			hasError: false,
+			ipAdress: ''   //IP地址
 		};
 		this.gotoUsers = this.gotoUsers.bind(this);
 		this.clickGetRequest = this.clickGetRequest.bind(this)
@@ -44,40 +51,61 @@ class Home extends Component {
 	//获取信息
 	clickGetRequest(){
 		this.showLoading();
-		axios.get(GETINFO_URL).then(response => {
-
-			if(response.status == 200){
-				let data = response.data[0];
-				console.log(data);
-				let newData = {
-					Message:data.Message,
-					ResultCode:data.ResultCode,
-					Name:data.Name,
-					Gender:data.Gender,
-					DoctorName:data.DoctorName,
-					InstrumentName:data.InstrumentName,
-					ItemList:data.ItemList,
-					CheckDate:data.CheckDate,
-					IdCardNo:data.IdCardNo
-				}
-				console.log(newData)
-				this.setState({userInfo:newData});
-				//拿到数据随即POST到Mesuaposttest
-				axios(POSTINFO_URL,{
-					method: 'POST',
-					data : newData,
-					headers: {
-						// 'Authorization': `bearer ${token}`,
-						'Content-Type': 'application/json'
-					}
-				}).then(response => {
-					this.setState({ animating: !this.state.animating }); //关闭loading
-					this.showModal2();
-					console.log(response)
-				})
-
+		let ip = this.state.ipAdress;
+		if (ip !== '') {
+			if (/.*[\u4e00-\u9fa5]+.*$/.test(ip)) { //判断是否有汉字
+				Toast.info('请输入有效的IP地址');
+			}else {
+				//按照用户输入IP进行请求
+				getData('http://' + ip + GETINFO_URL);
 			}
-		})
+		} else {
+			//如果没有输入，使用默认地址
+			getData(defaultIp + GETINFO_URL);
+		};
+
+		//请求接口
+		function getData(url) {
+			axios.get(url).then(response => {
+				if(response.status == 200){
+					let data = response.data[0];
+					console.log(data);
+					let newData = {
+						Message:data.Message,
+						ResultCode:data.ResultCode,
+						Name:data.Name,
+						Gender:data.Gender,
+						DoctorName:data.DoctorName,
+						InstrumentName:data.InstrumentName,
+						ItemList:data.ItemList,
+						CheckDate:data.CheckDate,
+						IdCardNo:data.IdCardNo
+					}
+					console.log(newData)
+					this.setState({userInfo:newData});
+					//拿到数据随即POST到Mesuaposttest
+					axios(POSTINFO_URL,{
+						method: 'POST',
+						data : newData,
+						headers: {
+							// 'Authorization': `bearer ${token}`,
+							'Content-Type': 'application/json'
+						}
+					}).then(response => {
+						this.setState({ animating: !this.state.animating }); //关闭loading
+						this.showModal2();
+						console.log(response)
+					})
+
+				}else {
+					//返回错误
+					this.setState({ animating: !this.state.animating }); //关闭loading
+					this.showModal('modal1');
+					console.log(response)
+				}
+			})
+		}
+
 	}
 	showLoading = () => {
 		this.setState({ animating: !this.state.animating });
@@ -92,13 +120,13 @@ class Home extends Component {
 			[key]: true,
 		});
 	}
-	showModal2 = () => {
+	/*showModal2 = () => {
 		console.log("showModal2")
 		// e.preventDefault(); // 修复 Android 上点击穿透
 		this.setState({
 			modal1: true
 		});
-	}
+	}*/
 	onClose = key => () => {
 		this.setState({
 			[key]: false,
@@ -115,6 +143,28 @@ class Home extends Component {
 		}
 	}
 
+
+
+	/*输入事件*/
+	onErrorClick = () => {
+		if (this.state.hasError) {
+			Toast.info('请输入有效的IP地址');
+		}
+	}
+	onChange = (value) => {
+		/*if (value.replace(/[^\w\.\/]/ig,'')) {
+			this.setState({
+				hasError: true,
+			});
+		} else {
+			this.setState({
+				hasError: false,
+			});
+		}*/
+		this.setState({
+			ipAdress:value
+		});
+	}
 	render() {
 		return (
 			<div className="App">
@@ -122,8 +172,22 @@ class Home extends Component {
 					<img src={logo} className="App-logo" alt="logo"/>
 					<h1 className="App-title">Welcome to MES</h1>
 				</header>
+
+				<div className='input-con'>
+					<WhiteSpace size="lg"/>
+					<InputItem
+						clear
+						placeholder="192.168.1.47:23412"
+						error={this.state.hasError}
+						onErrorClick={this.onErrorClick}
+						onChange={this.onChange}
+						value={this.state.ipAdress}
+					>请输入IP</InputItem>
+				</div>
+
 				<div className="flex-container">
 					{/*<div className="sub-title">Basic</div>*/}
+
 					<WhiteSpace size="lg"/>
 					<Flex>
 						<Flex.Item>
@@ -142,9 +206,7 @@ class Home extends Component {
 					{/*<WhiteSpace size="lg" />*/}
 
 					{/*<div className="sub-title">Wrap</div>*/}
-					<Flex wrap="wrap">
-					</Flex>
-
+					<Flex wrap="wrap"></Flex>
 				</div>
 
 				<div className="toast-example">
