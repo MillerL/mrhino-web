@@ -68,7 +68,8 @@ class Home extends Component {
 		//请求接口
 		function getData(url) {
 			axios.get(url).then(response => {
-				Modal.alert('response',response);
+				var string = JSON.stringify(response);
+				Modal.alert('response',string);
 				/*if(response.status == 200){
 					let data = response.data[0];
 					console.log(data);
