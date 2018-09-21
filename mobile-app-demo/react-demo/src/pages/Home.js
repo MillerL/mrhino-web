@@ -13,8 +13,10 @@ import axios from 'axios';
 import {Link} from 'react-router-dom';
 import '../utils/config';
 
-// const GETINFO_URL = 'http://39.106.52.140:1337/Mesuattest?_limit=1&_start=0'; //测试用API
-const defaultIp = 'http://192.168.1.221:23412'; //默认IP
+// const GETMesuat_URL = 'http://39.106.52.140:1337/Mesuattest?_limit=1&_start=0'; //测试用API
+const GETMesuat_URL = 'http://39.106.52.140:1337/Mesuattest'; //测试用API
+const defaultIp = GETMesuat_URL; //默认IP
+// const defaultIp = 'http://192.168.1.101:23412'; //默认IP
 const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
 const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
 
@@ -36,7 +38,6 @@ class Home extends Component {
 			modal1: false, //popup
 			animating: false, //loaidng
 			userInfo:{},
-
 			hasError: false,
 			ipAdress: ''   //IP地址
 		};
@@ -51,25 +52,31 @@ class Home extends Component {
 	//获取信息
 	clickGetRequest(){
 		// Modal.alert('父兄打算','大')
+		let self =this;
 		this.showLoading();
 		let ip = this.state.ipAdress;
-		if (ip !== '') {
+        console.log(ip);
+        if (ip !== '') {
 			if (/.*[\u4e00-\u9fa5]+.*$/.test(ip)) { //判断是否有汉字
 				Toast.info('请输入有效的IP地址');
 			}else {
 				//按照用户输入IP进行请求
-				getData('http://' + ip + GETINFO_URL);
+				// getData('http://' + ip + GETINFO_URL);
+				getData(ip);
+				// getData(ip);
 			}
 		} else {
 			//如果没有输入，使用默认地址
-			getData(defaultIp + GETINFO_URL);
+			// getData(defaultIp + GETINFO_URL);
+            getData(GETMesuat_URL);
 		};
 
 		//请求接口
 		function getData(url) {
-			axios.get(url).then(response => {
+			axios.get(url).then((response) => {
 				var string = JSON.stringify(response);
 				Modal.alert('response',string);
+                self.setState({ animating: !self.state.animating }); //关闭loading
 				/*if(response.status == 200){
 					let data = response.data[0];
 					console.log(data);
@@ -95,17 +102,21 @@ class Home extends Component {
 							'Content-Type': 'application/json'
 						}
 					}).then(response => {
-						this.setState({ animating: !this.state.animating }); //关闭loading
+
 						this.showModal2();
 						console.log(response)
 					})
 
 				}else {
 					//返回错误
-					this.setState({ animating: !this.state.animating }); //关闭loading
 					this.showModal('modal1');
 					console.log(response)
 				}*/
+			},
+            (error) => {
+                var string = JSON.stringify(error);
+                Modal.alert('error',string);
+                self.setState({ animating: !self.state.animating }); //关闭loading
 			})
 		}
 
