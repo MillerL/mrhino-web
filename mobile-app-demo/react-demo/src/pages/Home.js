@@ -14,7 +14,7 @@ import {Link} from 'react-router-dom';
 import '../utils/config';
 
 // const GETINFO_URL = 'http://39.106.52.140:1337/Mesuattest?_limit=1&_start=0'; //测试用API
-const defaultIp = 'http://192.168.1.47:23412'; //默认IP
+const defaultIp = 'http://192.168.1.221:23412'; //默认IP
 const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
 const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
 
@@ -50,6 +50,7 @@ class Home extends Component {
 	}
 	//获取信息
 	clickGetRequest(){
+		// Modal.alert('父兄打算','大')
 		this.showLoading();
 		let ip = this.state.ipAdress;
 		if (ip !== '') {
@@ -67,7 +68,8 @@ class Home extends Component {
 		//请求接口
 		function getData(url) {
 			axios.get(url).then(response => {
-				if(response.status == 200){
+				Modal.alert('response',response);
+				/*if(response.status == 200){
 					let data = response.data[0];
 					console.log(data);
 					let newData = {
@@ -102,7 +104,7 @@ class Home extends Component {
 					this.setState({ animating: !this.state.animating }); //关闭loading
 					this.showModal('modal1');
 					console.log(response)
-				}
+				}*/
 			})
 		}
 
@@ -177,7 +179,7 @@ class Home extends Component {
 					<WhiteSpace size="lg"/>
 					<InputItem
 						clear
-						placeholder="192.168.1.47:23412"
+						placeholder = {defaultIp}
 						error={this.state.hasError}
 						onErrorClick={this.onErrorClick}
 						onChange={this.onChange}
