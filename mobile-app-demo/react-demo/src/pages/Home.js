@@ -17,8 +17,9 @@ import '../utils/config';
 const GETMesuat_URL = 'http://39.106.52.140:1337/Mesuattest'; //测试用API
 const defaultIp = GETMesuat_URL; //默认IP
 // const defaultIp = 'http://192.168.1.101:23412'; //默认IP
-const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
-const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
+// const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
+// const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
+const TEST_URL = 'http://192.168.1.221:23412/httpServer/getHealthData';
 
 function closest(el, selector) {
 	const matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
@@ -37,7 +38,7 @@ class Home extends Component {
 		this.state = {
 			modal1: false, //popup
 			animating: false, //loaidng
-			userInfo:{},
+			userInfo: {},
 			hasError: false,
 			ipAdress: ''   //IP地址
 		};
@@ -49,17 +50,18 @@ class Home extends Component {
 	gotoUsers() {
 		this.props.history.push('/users')
 	}
+
 	//获取信息
-	clickGetRequest(){
+	clickGetRequest() {
 		// Modal.alert('父兄打算','大')
-		let self =this;
+		let self = this;
 		this.showLoading();
 		let ip = this.state.ipAdress;
-        console.log(ip);
-        if (ip !== '') {
+		console.log(ip);
+		if (ip !== '') {
 			if (/.*[\u4e00-\u9fa5]+.*$/.test(ip)) { //判断是否有汉字
 				Toast.info('请输入有效的IP地址');
-			}else {
+			} else {
 				//按照用户输入IP进行请求
 				// getData('http://' + ip + GETINFO_URL);
 				getData(ip);
@@ -68,12 +70,23 @@ class Home extends Component {
 		} else {
 			//如果没有输入，使用默认地址
 			// getData(defaultIp + GETINFO_URL);
-            getData(GETMesuat_URL);
-		};
+			getData(TEST_URL);
+		}
+		;
 
 		//请求接口
 		function getData(url) {
-			axios.get(url).then((response) => {
+			var mydata = {
+				Token: "370211198205140059",
+				IdCardNo: "370211198205140059"
+			};
+			const options = {
+				method: 'POST',
+				headers: { 'content-type': 'application/x-www-form-urlencoded' },
+				data: mydata,
+				url,
+			};
+			axios(options).then((response) => {
 				var string = JSON.stringify(response);
 				Modal.alert('response',string);
                 self.setState({ animating: !self.state.animating }); //关闭loading
@@ -121,8 +134,9 @@ class Home extends Component {
 		}
 
 	}
+
 	showLoading = () => {
-		this.setState({ animating: !this.state.animating });
+		this.setState({animating: !this.state.animating});
 		/*this.closeTimer = setTimeout(() => {
 			this.setState({ animating: !this.state.animating });
 		}, 1000);*/
@@ -158,7 +172,6 @@ class Home extends Component {
 	}
 
 
-
 	/*输入事件*/
 	onErrorClick = () => {
 		if (this.state.hasError) {
@@ -176,9 +189,10 @@ class Home extends Component {
 			});
 		}*/
 		this.setState({
-			ipAdress:value
+			ipAdress: value
 		});
 	}
+
 	render() {
 		return (
 			<div className="App">
@@ -191,7 +205,7 @@ class Home extends Component {
 					<WhiteSpace size="lg"/>
 					<InputItem
 						clear
-						placeholder = {defaultIp}
+						placeholder={TEST_URL}
 						error={this.state.hasError}
 						onErrorClick={this.onErrorClick}
 						onChange={this.onChange}
