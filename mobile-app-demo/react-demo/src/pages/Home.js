@@ -77,7 +77,7 @@ class Home extends Component {
 		//请求接口
 		function getData(url) {
 			var mydata = {
-				Token: "370211198205140059",
+				Token: "fawehdty7319isbs",
 				IdCardNo: "370211198205140059"
 			};
 			const options = {
