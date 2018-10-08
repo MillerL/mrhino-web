@@ -312,7 +312,7 @@ export default class HealthForm1 extends Component<Props> {
 										number: value,
 									});
 								}}
-								placeholder="简易智力状态检查"
+								placeholder="老年人抑郁评分检查"
 							>
 								总分
 							</InputItem>

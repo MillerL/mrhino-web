@@ -158,7 +158,7 @@ export default class HealthForm1 extends Component<Props> {
 						}}
 						placeholder="text"
 					>
-						文本输入
+						文本输入文本
 					</InputItem>
 					<InputItem
 						clear
@@ -169,9 +169,9 @@ export default class HealthForm1 extends Component<Props> {
 								bankcard: value,
 							});
 						}}
-						placeholder="bankCard"
+						placeholder="1e3"
 					>
-						银行卡
+						银行卡银行卡
 					</InputItem>
 					<InputItem
 						clear

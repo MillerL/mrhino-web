@@ -54,7 +54,7 @@ export default class HealthForm3 extends Component<Props> {
 							}
 						}}
 					>
-						Use Ant Desgin Component
+						Use Ant D大
 					</RadioItem>
 					<RadioItem
 						checked={this.state.part2Value === 2}

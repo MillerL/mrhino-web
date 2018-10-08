@@ -96,7 +96,7 @@ const BottomTabNavigator = createBottomTabNavigator(
 
 	{
 		// 初始化哪个界面为显示的第一个界面，如果不配置，默认使用RouteConfigs中的第一个页面当做根界面
-		initialRouteName: "HealthForm1",
+		initialRouteName: "HealthForm2",
 		lazy: true,
 		tabBarOptions: {
 			inactiveTintColor: "#8F8F8F",

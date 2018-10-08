@@ -3,7 +3,6 @@ import {Text, View, Image} from 'react-native';
 // import view from './view';
 import {WhiteSpace, WingBlank, InputItem, Flex, List, Button, Checkbox} from 'antd-mobile-rn';
 
-const AgreeItem = Checkbox.AgreeItem;
 const CheckboxItem = Checkbox.CheckboxItem;
 const checkList = [
 	{checkStatus: false, name: '无症状'}, {checkStatus: false, name: '头晕'}, {
