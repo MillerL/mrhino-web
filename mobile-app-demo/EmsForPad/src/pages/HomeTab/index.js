@@ -11,6 +11,14 @@ import {TabNavigator, createBottomTabNavigator} from 'react-navigation';
 // import CustomHeader from '../../config/CustomHeader'
 
 export default class HomeTab extends Component {
+	static navigationOptions = {
+		// 设置 title
+		title: "首页"
+	};
+	constructor(props) {
+		super(props);
+		this.navigation = props.navigation;
+	}
 	render() {
 		return (
 			<BottomTabNavigator />
@@ -31,9 +39,9 @@ const BottomTabNavigator = createBottomTabNavigator(
 						: require('../../assets/images/tab_0.png');
 					return <Image source={icon} style={{ height: 20, width: 20 }} />;
 				},
-				// header: props => <CustomHeader {...props} />
-				header: null,
-				headerLeft: null
+				header: props => <CustomHeader {...props} />
+				// header: null,
+				// headerLeft: null
 			},
 		},
 		HealthForm1: {
@@ -96,7 +104,7 @@ const BottomTabNavigator = createBottomTabNavigator(
 
 	{
 		// 初始化哪个界面为显示的第一个界面，如果不配置，默认使用RouteConfigs中的第一个页面当做根界面
-		initialRouteName: "HealthForm2",
+		initialRouteName: "HealthForm0",
 		lazy: true,
 		tabBarOptions: {
 			inactiveTintColor: "#8F8F8F",

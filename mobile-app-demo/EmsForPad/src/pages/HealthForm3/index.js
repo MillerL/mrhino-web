@@ -17,32 +17,12 @@ export default class HealthForm3 extends Component<Props> {
 	render() {
 		return (
 			<View>
-				<View style={{ padding: 10 }}>
-					<Radio
-						checked={this.state.part1Value === 1}
-						onChange={(event: any) => {
-							if (event.target.checked) {
-								this.setState({ part1Value: 1 });
-							}
-						}}
-						style={{ borderWidth: 1, borderColor: '#999', margin: 10 }}
-					>
-						Support
-					</Radio>
-					<WhiteSpace />
-					<Radio
-						checked={this.state.part1Value === 2}
-						onChange={(event: any) => {
-							if (event.target.checked) {
-								this.setState({ part1Value: 2 });
-							}
-						}}
-						style={{ borderWidth: 1, borderColor: '#999', margin: 10 }}
-					/>
-					<WhiteSpace />
-				</View>
+				<WhiteSpace>
+					敬请期待
+					<Text style={{fontSize:24,color:'#333',textAlign:'center'}}>敬请期待</Text>
+				</WhiteSpace>
 
-				<List style={{ marginTop: 12 }}>
+				{/*<List style={{ marginTop: 12 }}>
 					<Text style={{ marginTop: 12 }}>
 						Form radio, radio in general list.
 					</Text>
@@ -70,7 +50,7 @@ export default class HealthForm3 extends Component<Props> {
 					<RadioItem disabled checked>
 						Set disabled
 					</RadioItem>
-				</List>
+				</List>*/}
 			</View>
 		);
 	}

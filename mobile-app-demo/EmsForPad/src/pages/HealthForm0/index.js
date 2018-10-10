@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Text, View, Image} from 'react-native';
-// import view from './view';
-import {WhiteSpace, WingBlank, InputItem, Flex, List, Button, Checkbox} from 'antd-mobile-rn';
+import {Text, View, Image,ViewStyle} from 'react-native';
+import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button} from 'antd-mobile-rn';
+import view from '../../config/globalData';
+
 
 const CheckboxItem = Checkbox.CheckboxItem;
 const checkList = [
@@ -31,13 +32,23 @@ const checkList = [
 	}, {checkStatus: false, name: '乳房胀痛'}];
 
 type Props = {};
+
+function onChange(value: any) {
+	console.log('changed', value);
+}
 export default class HealthForm0 extends React.Component<any, any> {
+	static navigationOptions = {
+		// 设置 title
+		title: "首页"
+	};
+
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.navigation = props.navigation;
 		this.state = {
 			// checksArr:[]
-			text: '' //其他 文本
+			text: '', //其他 文本
+			percent: 40,
 		};
 		for (var i = 0; i < checkList.length; i++) {
 			var objKey = 'checkStatus' + i;
@@ -46,11 +57,41 @@ export default class HealthForm0 extends React.Component<any, any> {
 		;
 		console.log(this.state)
 	};
+	onAdd = () => {
+		let p = this.state.percent + 10;
+		if (this.state.percent >= 100) {
+			p = 0;
+		}
+		this.setState({ percent: p });
+	}
 
 	render() {
-
+		const styles = {
+			marginTop: 80,
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+		};
 		return (
 			<View>
+				<WhiteSpace />
+				<View>
+					<View style={{ marginRight: 10, height: 10, flex: 1 }}>
+						<Progress percent={this.state.percent} style={{ height: 10}}/>
+					</View>
+					<Text style={{marginTop:10}}>填写进度 {this.state.percent}%</Text>
+				</View>
+				<Button
+					style={{ width: 50, marginLeft: 10 }}
+					type="ghost"
+					size="small"
+					onClick={this.onAdd}
+				>
+					(+-)10
+				</Button>
+				<WhiteSpace />
+				{/*<Progress percent={5} />*/}
+
 				<List style={{marginTop: 12}}>
 					<Text style={{marginTop: 12, marginLeft: 20, marginBottom: 22, fontSize: 20}}>症状</Text>
 
