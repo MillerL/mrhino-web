@@ -104,8 +104,6 @@ export default class HealthForm0 extends React.Component<any, any> {
 										// var checkObj = checksArr[0].checkBox0;
 										this.setState({checkStatus0: event.target.checked}, function () {
 											//setState 不同步，所以取值必须写在回调里
-											// console.log(event);
-											// console.log(this.state);
 										});
 									}}
 								>

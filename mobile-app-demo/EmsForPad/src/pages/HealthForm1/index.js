@@ -19,8 +19,11 @@ export default class HealthForm1 extends Component<Props> {
 			waistline:'',//腰围
 			bmi:'',//体质指数
 
-			part1Value: 1,
-			part2Value: 1,
+            agedLiveStatus: 1,//老年人生活状态自我评估
+            // intelligenceScore: 1,//智力得分
+            agedSelfCareStatus: 1, //老年人生活自理能力自我评估
+            agedCognitive: 1, //老年人认知功能
+            agedEmotionStatus: 1, //老年人情感状态
 		}
 	}
 
@@ -149,50 +152,50 @@ export default class HealthForm1 extends Component<Props> {
 					<Flex.Item style={styles.flexItemColumnStyle}>
 						<List renderHeader={() => '老年人健康状态自我评估*'}>
 							<RadioItem
-								checked={this.state.part2Value === 1}
+								checked={this.state.agedLiveStatus === 1}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 1 });
+										this.setState({ agedLiveStatus: 1 });
 									}
 								}}
 							>
 								满意
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedLiveStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedLiveStatus: 2 });
 									}
 								}}
 							>
 								基本满意
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedLiveStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedLiveStatus: 2 });
 									}
 								}}
 							>
 								说不清楚
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedLiveStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedLiveStatus: 2 });
 									}
 								}}
 							>
 								不太满意
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedLiveStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedLiveStatus: 2 });
 									}
 								}}
 							>
@@ -203,40 +206,40 @@ export default class HealthForm1 extends Component<Props> {
 					<Flex.Item style={styles.flexItemColumnStyle}>
 						<List renderHeader={() => '老年人生活自理能力自我评估*'}>
 							<RadioItem
-								checked={this.state.part2Value === 1}
+								checked={this.state.agedSelfCareStatus === 1}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 1 });
+										this.setState({ agedSelfCareStatus: 1 });
 									}
 								}}
 							>
 								可自理（0～3分）
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedSelfCareStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedSelfCareStatus: 2 });
 									}
 								}}
 							>
 								轻度依赖（4～8分）
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedSelfCareStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedSelfCareStatus: 2 });
 									}
 								}}
 							>
 								中度依赖（9～18分)
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedSelfCareStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedSelfCareStatus: 2 });
 									}
 								}}
 							>
@@ -247,20 +250,20 @@ export default class HealthForm1 extends Component<Props> {
 					<Flex.Item style={styles.flexItemColumnStyle}>
 						<List renderHeader={() => '老年人认知功能*'}>
 							<RadioItem
-								checked={this.state.part2Value === 1}
+								checked={this.state.agedCognitive === 1}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 1 });
+										this.setState({ agedCognitive: 1 });
 									}
 								}}
 							>
 								粗筛阴性
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedCognitive === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedCognitive: 2 });
 									}
 								}}
 							>
@@ -269,10 +272,10 @@ export default class HealthForm1 extends Component<Props> {
 							<InputItem
 								clear
 								type="number"
-								value={this.state.number}
+								value={this.state.intelligenceScore}
 								onChange={(value: any) => {
 									this.setState({
-										number: value,
+                                        intelligenceScore: value,
 									});
 								}}
 								placeholder="简易智力状态检查"
@@ -284,20 +287,20 @@ export default class HealthForm1 extends Component<Props> {
 					<Flex.Item style={styles.flexItemColumnStyle}>
 						<List renderHeader={() => '老年人情感状态*'}>
 							<RadioItem
-								checked={this.state.part2Value === 1}
+								checked={this.state.agedEmotionStatus === 1}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 1 });
+										this.setState({ agedEmotionStatus: 1 });
 									}
 								}}
 							>
 								粗筛阴性
 							</RadioItem>
 							<RadioItem
-								checked={this.state.part2Value === 2}
+								checked={this.state.agedEmotionStatus === 2}
 								onChange={(event: any) => {
 									if (event.target.checked) {
-										this.setState({ part2Value: 2 });
+										this.setState({ agedEmotionStatus: 2 });
 									}
 								}}
 							>
