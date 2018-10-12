@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, Image,ViewStyle} from 'react-native';
+import {Text, View, Image, ViewStyle, StyleSheet} from 'react-native';
 import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button} from 'antd-mobile-rn';
 import view from '../../config/globalData';
 
@@ -47,14 +47,14 @@ export default class HealthForm0 extends React.Component<any, any> {
 		this.navigation = props.navigation;
 		this.state = {
 			// checksArr:[]
-			text: '', //其他 文本
+			symptom: '', //症状
 			percent: 40,
+
 		};
 		for (var i = 0; i < checkList.length; i++) {
 			var objKey = 'checkStatus' + i;
 			this.state[objKey] = false
-		}
-		;
+		};
 		console.log(this.state)
 	};
 	onAdd = () => {
@@ -73,7 +73,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 			alignItems: 'center',
 		};
 		return (
-			<View>
+			<View style={{height:'100%'}}>
 				<WhiteSpace />
 				<View>
 					<View style={{ marginRight: 10, height: 10, flex: 1 }}>
@@ -96,97 +96,36 @@ export default class HealthForm0 extends React.Component<any, any> {
 					<Text style={{marginTop: 12, marginLeft: 20, marginBottom: 22, fontSize: 20}}>症状</Text>
 
 					<WingBlank style={{marginBottom: 5}}>
-						<Flex direction="row" justify="around" wrap="wrap">
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem
-									checked={this.state.checkStatus0}
-									onChange={(event: any) => {
-										// var checkObj = checksArr[0].checkBox0;
-										this.setState({checkStatus0: event.target.checked}, function () {
-											//setState 不同步，所以取值必须写在回调里
-										});
-									}}
-								>
-									无症状
-								</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>头痛</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>心悸</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>胸闷</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>胸痛</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>慢性咳嗽</CheckboxItem>
-							</Flex.Item>
-						</Flex>
-						<Flex direction="row" justify="around" wrap="wrap">
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>咳痰</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>呼吸困难</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>多饮</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>多尿</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>体重下降</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>乏力</CheckboxItem>
-							</Flex.Item>
 
+						<Flex direction="row" wrap="wrap" style={{padding:20}}>
+							{/*<Checkbox style={styles.checkStyle}
+							          checked={this.state.checkStatus0}
+							          onChange={(event) => {
+								          // var checkObj = checksArr[0].checkBox0;
+								          this.setState({checkStatus0: event.target.checked}, function () {
+									          //setState 不同步，所以取值必须写在回调里
+								          });
+							          }}
+							>头痛</Checkbox>*/}
+							{checkList.map((item,id)=>{
+								return(
+									<View key={id} style={{marginLeft:60,marginBottom:40}}>
+										<Checkbox
+										          // checked = {"this.state.checkStatus" + id}
+										          checked = {this.state["checkStatus"+id]}
+													// checked={false}
+										          onChange = {(event) => {
+											          // let checkObj = this.state["checkStatus"+id];
+											          this.setState({["checkStatus"+id]: event.target.checked}, function () {
+												          //setState 不同步，所以取值必须写在回调里
+											          });
+										          }}
+										>{item.name}</Checkbox>
+									</View>
+								)
+							})}
 						</Flex>
-						<Flex direction="row" justify="around">
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>关节肿痛</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>视力模糊</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>手脚麻木</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>视力模糊</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>尿急</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>尿痛便秘</CheckboxItem>
-							</Flex.Item>
-						</Flex>
-						<Flex direction="row" justify="around">
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>便秘</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>腹泻</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>恶心呕吐</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>眼花</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>耳鸣</CheckboxItem>
-							</Flex.Item>
-							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem>乳房胀痛</CheckboxItem>
-							</Flex.Item>
-						</Flex>
+
 
 					</WingBlank>
 
@@ -196,10 +135,10 @@ export default class HealthForm0 extends React.Component<any, any> {
 				</CheckboxItem>*/}
 					<InputItem style={{marginLeft: 40, marginTop: 10}}
 					           clear
-					           value={this.state.text}
-					           onChange={(value: any) => {
+					           value={this.state.symptom}
+					           onChange={(value) => {
 						           this.setState({
-							           text: value,
+							           symptom: value,
 						           });
 					           }}
 					           placeholder=""
@@ -208,7 +147,27 @@ export default class HealthForm0 extends React.Component<any, any> {
 					</InputItem>
 
 				</List>
+
+				<Button type="primary" style={mystyles.fixedBtn}>同步</Button>
 			</View>
 		);
 	}
 }
+
+const mystyles = StyleSheet.create({
+	checkStyle: {
+		marginBottom: 30,
+		marginTop: 30,
+		marginLeft:30,
+		padding:10
+	},
+	fixedBtn:{
+		// marginTop:40,
+		position:'absolute',
+		bottom:30,
+		right:30,
+		width:80,
+		height:80,
+		borderRadius:100
+	}
+});

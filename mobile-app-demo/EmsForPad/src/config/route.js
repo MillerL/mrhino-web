@@ -6,6 +6,7 @@ import {StackNavigator} from "react-navigation";
 import HomeTab from "../pages/HomeTab";
 import BasicForm from "../pages/BasicForm";
 import HealthForm from "../pages/HealthForm";
+import UserList from "../pages/UserList";
 import Home from "../pages/Home";
 import Test from "../pages/Test";
 
@@ -29,6 +30,9 @@ const AppNavigator = StackNavigator({
 				color:'#666',
 			}
 		}
+	},
+	UserList:{
+		screen: UserList
 	},
 	HealthForm: {
 		screen: HealthForm
