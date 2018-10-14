@@ -4,6 +4,7 @@ import PopupDialog , { DialogTitle} from 'react-native-popup-dialog';
 import {ActivityIndicator,Card,WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
 import Server from '../../utils/Server'
 import globalData from '../../config/globalData';
+import UserList from "../UserList";
 
 
 export default class Home extends Component {
@@ -24,18 +25,24 @@ export default class Home extends Component {
 	//显示浮层
 	showPopupLayer = () => {
 		this.popupDialog.show();
+	}
+
+	//显示关闭loading
+	showOrCloseLoading = () =>{
 		this.setState({ animating: !this.state.animating });
 	}
 	//创建新用户
 	creatNewUser = () => {
 		console.log(this.state.idNum);
+		let self = this;
 		if(this.state.idNum!=''){
 			//创建新用户
+			// this.showOrCloseLoading(); //显示LOADING
 			Server.postNewUser(this.state.idNum,function (res) {
-				// console.log(res);
-				// EasyLoading.dismis('default');
-				globalData.currentUserId = this.state.idNum;
-				this.props.navigation.navigate('HomeTab');//跳转填写健康档案
+				console.log(res);
+				let id = res.data.id;
+				globalData.currentId = id;
+				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
 			})
 		}else{
 			//输入值为空
@@ -74,7 +81,10 @@ export default class Home extends Component {
 					<Button type="primary" onClick={this.showPopupLayer}>创建个人健康档案</Button>
 					<WhiteSpace/>
 					<WhiteSpace/>
-					<Button type="primary" onClick={() => this.props.navigation.navigate('HomeTab')}>用户列表</Button>
+					<Button type="primary" onClick={() => this.props.navigation.navigate('UserList')}>用户列表</Button>
+					<WhiteSpace/>
+					<WhiteSpace/>
+					<Button type="primary" onClick={() => this.props.navigation.navigate('HomeTab')}>编辑当前用户信息</Button>
 					<WhiteSpace/>
 
 					{/*<Button  disabled style={{marginTop:10}}>个人基本信息表</Button>*/}
@@ -100,11 +110,13 @@ export default class Home extends Component {
 						</InputItem>
 						<WhiteSpace/>
 						<Button style={{marginTop:40}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
+
+						{/*<ActivityIndicator text="Loading..." />*/}
+
 					</View>
 				</PopupDialog>
 
 
-				<ActivityIndicator text="Loading..." />
 			</View>
 
 

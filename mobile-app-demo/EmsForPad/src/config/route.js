@@ -7,6 +7,7 @@ import HomeTab from "../pages/HomeTab";
 import BasicForm from "../pages/BasicForm";
 import HealthForm from "../pages/HealthForm";
 import UserList from "../pages/UserList";
+import UserInfo from "../pages/UserInfo";
 import Home from "../pages/Home";
 import Test from "../pages/Test";
 
@@ -33,6 +34,9 @@ const AppNavigator = StackNavigator({
 	},
 	UserList:{
 		screen: UserList
+	},
+	UserInfo:{
+		screen: UserInfo
 	},
 	HealthForm: {
 		screen: HealthForm

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Text, View, Image, ViewStyle, StyleSheet} from 'react-native';
+import {Text, View, Image, ViewStyle, StyleSheet, Alert} from 'react-native';
 import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button} from 'antd-mobile-rn';
-import view from '../../config/globalData';
+// import view from '../../config/globalData';
+import Server from '../../utils/Server';
 
 
 const CheckboxItem = Checkbox.CheckboxItem;
@@ -46,14 +47,11 @@ export default class HealthForm0 extends React.Component<any, any> {
 		super(props, context);
 		this.navigation = props.navigation;
 		this.state = {
-			// checksArr:[]
-			symptom: '', //症状
+			checksArr:checkList, //多选的数组对象
+			symptom: [], //症状
+			others:'', //其他症状
 			percent: 40,
 
-		};
-		for (var i = 0; i < checkList.length; i++) {
-			var objKey = 'checkStatus' + i;
-			this.state[objKey] = false
 		};
 		console.log(this.state)
 	};
@@ -63,6 +61,45 @@ export default class HealthForm0 extends React.Component<any, any> {
 			p = 0;
 		}
 		this.setState({ percent: p });
+	}
+	//同步数据
+	syncData =()=>{
+		var pageData = this.handleWithData();
+		console.log(pageData)
+		//判断是否输入为空
+		if(pageData.length > 0){
+			var pageString = pageData.join();
+			console.log(pageString)
+			var data = {
+				symptom : pageString
+			}
+			Server.postHealthInfo(data,function (res) {
+				console.log(res)
+				Server.showAlert('同步成功');
+			})
+		}else {
+			Server.showAlert('输入值为空');
+		}
+	}
+	//处理数据
+	handleWithData =()=>{
+		//遍历数组找出勾选的项目
+		if(this.state.checksArr.length > 0){
+			for (var i =0; i < this.state.checksArr.length; i++) {
+				var obj = this.state.checksArr[i];
+				if(obj['checkStatus'] == true){
+					//PUSH到预制数组
+					this.state.symptom.push(obj.name)
+				}
+			}
+		}
+		//如果其他有输入，就push到症状里
+		if(this.state.others != ''){
+			this.state.symptom.push(this.state.others)
+		}
+
+		return this.state.symptom;
+
 	}
 
 	render() {
@@ -98,26 +135,19 @@ export default class HealthForm0 extends React.Component<any, any> {
 					<WingBlank style={{marginBottom: 5}}>
 
 						<Flex direction="row" wrap="wrap" style={{padding:20}}>
-							{/*<Checkbox style={styles.checkStyle}
-							          checked={this.state.checkStatus0}
-							          onChange={(event) => {
-								          // var checkObj = checksArr[0].checkBox0;
-								          this.setState({checkStatus0: event.target.checked}, function () {
-									          //setState 不同步，所以取值必须写在回调里
-								          });
-							          }}
-							>头痛</Checkbox>*/}
 							{checkList.map((item,id)=>{
 								return(
 									<View key={id} style={{marginLeft:60,marginBottom:40}}>
 										<Checkbox
 										          // checked = {"this.state.checkStatus" + id}
-										          checked = {this.state["checkStatus"+id]}
+										          checked = {this.state.checksArr[id]["checkStatus"]}
 													// checked={false}
 										          onChange = {(event) => {
-											          // let checkObj = this.state["checkStatus"+id];
-											          this.setState({["checkStatus"+id]: event.target.checked}, function () {
+											          let checkObjArr = this.state.checksArr;
+											          checkObjArr[id]["checkStatus"] =  event.target.checked
+											          this.setState({checksArr: checkObjArr}, function () {
 												          //setState 不同步，所以取值必须写在回调里
+												          console.log(this.state.checksArr)
 											          });
 										          }}
 										>{item.name}</Checkbox>
@@ -129,16 +159,12 @@ export default class HealthForm0 extends React.Component<any, any> {
 
 					</WingBlank>
 
-					{/*<CheckboxItem disabled>Option 3</CheckboxItem>
-				<CheckboxItem disabled checked>
-					Option 4
-				</CheckboxItem>*/}
 					<InputItem style={{marginLeft: 40, marginTop: 10}}
 					           clear
-					           value={this.state.symptom}
-					           onChange={(value) => {
+					           value={this.state.others}
+					           onChange={(value: any) => {
 						           this.setState({
-							           symptom: value,
+							           others: value,
 						           });
 					           }}
 					           placeholder=""
@@ -148,7 +174,9 @@ export default class HealthForm0 extends React.Component<any, any> {
 
 				</List>
 
-				<Button type="primary" style={mystyles.fixedBtn}>同步</Button>
+				<View style={mystyles.fixedBtn}>
+					<Button type="primary" onClick={this.syncData}>同步</Button>
+				</View>
 			</View>
 		);
 	}
@@ -166,8 +194,8 @@ const mystyles = StyleSheet.create({
 		position:'absolute',
 		bottom:30,
 		right:30,
-		width:80,
+		width:120,
 		height:80,
 		borderRadius:100
-	}
+	},
 });
