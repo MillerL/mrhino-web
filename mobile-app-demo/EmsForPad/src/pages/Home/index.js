@@ -1,11 +1,26 @@
 import React, {Component} from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image,StyleSheet,TouchableHighlight} from 'react-native';
 import PopupDialog , { DialogTitle} from 'react-native-popup-dialog';
 import {ActivityIndicator,Card,WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
 import Server from '../../utils/Server'
 import globalData from '../../config/globalData';
 import UserList from "../UserList";
+// import CameraButton from "../../utils/CameraButton";
+import ImagePicker from 'react-native-image-picker';
 
+
+const options = {
+	title: '拍照',
+	// customButtons: [{ name: 'fb', title: 'Choose Photo' }],
+	mediaType:'photo',//'photo', 'video', or 'mixed' on iOS, 'photo' or 'video' on Android
+	// maxWidth:2000,
+	// maxHeight:1200,
+	quality:0.6, //0 to 1, photos only
+	storageOptions: {
+		skipBackup: true,
+		path: 'images',
+	},
+};
 
 export default class Home extends Component {
 	// 自定义当前页面路由配置，后面介绍的TabNavigator也使用这个对象中的属性
@@ -13,6 +28,7 @@ export default class Home extends Component {
 		// 设置 title
 		title: "首页"
 	};
+
 
 	constructor(props) {
 		super(props);
@@ -30,6 +46,20 @@ export default class Home extends Component {
 	//显示关闭loading
 	showOrCloseLoading = () =>{
 		this.setState({ animating: !this.state.animating });
+	}
+
+	openCamera = ()=>{
+		console.log('打开摄像')
+		ImagePicker.launchImageLibrary(options, (response) => {
+			// Same code as in above section!
+			console.log(response)
+		});
+		/*ImagePicker.launchCamera(options, (response) => {
+			// Same code as in above section!
+			console.log(response)
+			var data = response.data;
+
+		});*/
 	}
 	//创建新用户
 	creatNewUser = () => {
@@ -84,7 +114,9 @@ export default class Home extends Component {
 					<Button type="primary" onClick={() => this.props.navigation.navigate('UserList')}>用户列表</Button>
 					<WhiteSpace/>
 					<WhiteSpace/>
-					<Button type="primary" onClick={() => this.props.navigation.navigate('HomeTab')}>编辑当前用户信息</Button>
+					{/*<Button type="primary" onClick={() => this.props.navigation.navigate('HomeTab')}>编辑当前用户信息</Button>*/}
+					{/*<Button type="primary" onClick={this.openCamera}>打开摄像头</Button>*/}
+						{/*<CameraButton photos={[]}/>*/}
 					<WhiteSpace/>
 
 					{/*<Button  disabled style={{marginTop:10}}>个人基本信息表</Button>*/}
@@ -94,7 +126,11 @@ export default class Home extends Component {
 
 
 				<PopupDialog width={0.4} dialogTitle={<DialogTitle title="创建用户" />} ref={(popupDialog) => { this.popupDialog = popupDialog; }}>
-					<View style={{padding:30}}>
+					<View style={{padding:30,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
+						<TouchableHighlight onPress={this.openCamera}>
+							<Image style={styles.iconBase} source={require('../../assets/camera.png')}/>
+						</TouchableHighlight>
+
 						<InputItem
 							clear
 							type='number'
@@ -109,7 +145,7 @@ export default class Home extends Component {
 							ID
 						</InputItem>
 						<WhiteSpace/>
-						<Button style={{marginTop:40}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
+						<Button style={{marginTop:20}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
 
 						{/*<ActivityIndicator text="Loading..." />*/}
 
@@ -123,3 +159,11 @@ export default class Home extends Component {
 		);
 	}
 }
+
+var styles = StyleSheet.create({
+	iconBase:{
+		width:60,
+		height:60,
+		marginBottom:20
+	}
+})

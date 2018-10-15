@@ -5001,6 +5001,11 @@ react-native-easy-loading@^1.0.5:
   resolved "http://registry.npm.taobao.org/react-native-easy-loading/download/react-native-easy-loading-1.0.5.tgz#859d9813e0b221f438f6942d365bf0263d9d99f3"
   integrity sha1-hZ2YE+CyIfQ49pQtNlvwJj2dmfM=
 
+react-native-image-picker@^0.27.1:
+  version "0.27.1"
+  resolved "http://registry.npm.taobao.org/react-native-image-picker/download/react-native-image-picker-0.27.1.tgz#32877c667e8c2713466fe178a6c7dd648e6cb5d3"
+  integrity sha1-Mod8Zn6MJxNGb+F4psfdZI5stdM=
+
 react-native-linear-gradient@^2.4.2:
   version "2.4.2"
   resolved "http://registry.npm.taobao.org/react-native-linear-gradient/download/react-native-linear-gradient-2.4.2.tgz#9d3acd0a198b9d4566e8f6253ef1f60fef0ff2be"
