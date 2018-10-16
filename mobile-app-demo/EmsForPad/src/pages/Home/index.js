@@ -2,13 +2,15 @@ import React, {Component} from 'react';
 import {Text, View, Image,StyleSheet,TouchableHighlight} from 'react-native';
 import PopupDialog , { DialogTitle} from 'react-native-popup-dialog';
 import {ActivityIndicator,Card,WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
-import Server from '../../utils/Server'
+import Server from '../../utils/Server';
+import BaiduOcrServer from '../../utils/BaiduOcrServer';
 import globalData from '../../config/globalData';
 import UserList from "../UserList";
 // import CameraButton from "../../utils/CameraButton";
 import ImagePicker from 'react-native-image-picker';
 
 
+//image-picker 配置
 const options = {
 	title: '拍照',
 	// customButtons: [{ name: 'fb', title: 'Choose Photo' }],
@@ -50,9 +52,19 @@ export default class Home extends Component {
 
 	openCamera = ()=>{
 		console.log('打开摄像')
+		//通过获取设备相册图片
 		ImagePicker.launchImageLibrary(options, (response) => {
 			// Same code as in above section!
 			console.log(response)
+			var data = response.data;  //base64 data
+			var fileSize = response.fileSize; //文件体积
+            console.log(fileSize);
+
+			//获取图片上面的文字
+            BaiduOcrServer.getIdInfoByOcr(data,function (res) {
+				//然后通过身份证ID获取设备信息
+
+            })
 		});
 		/*ImagePicker.launchCamera(options, (response) => {
 			// Same code as in above section!
