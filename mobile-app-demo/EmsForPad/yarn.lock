@@ -4965,6 +4965,11 @@ react-lifecycles-compat@^3, react-lifecycles-compat@^3.0.4:
   resolved "http://registry.npm.taobao.org/react-lifecycles-compat/download/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha1-TxonOv38jzSIqMUWv9p4+HI1I2I=
 
+react-native-base64@^0.0.2:
+  version "0.0.2"
+  resolved "http://registry.npm.taobao.org/react-native-base64/download/react-native-base64-0.0.2.tgz#c28463c2c6779ac3ec5fdd12979ebc8c5f9b410a"
+  integrity sha1-woRjwsZ3msPsX90Sl568jF+bQQo=
+
 react-native-camera-roll-picker@^1.2.1:
   version "1.2.3"
   resolved "http://registry.npm.taobao.org/react-native-camera-roll-picker/download/react-native-camera-roll-picker-1.2.3.tgz#b117fd3a2b9012dcccee1261a9bc427226b8d6d2"

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Text, View, Image,StyleSheet,TouchableHighlight} from 'react-native';
-import PopupDialog , { DialogTitle} from 'react-native-popup-dialog';
-import {ActivityIndicator,Card,WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
+import {Text, View, Image, StyleSheet, TouchableHighlight, Alert} from 'react-native';
+import PopupDialog, {DialogTitle} from 'react-native-popup-dialog';
+import {ActivityIndicator, Card, WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
+import base64 from 'react-native-base64'
 import Server from '../../utils/Server';
 import BaiduOcrServer from '../../utils/BaiduOcrServer';
 import globalData from '../../config/globalData';
@@ -14,10 +15,10 @@ import ImagePicker from 'react-native-image-picker';
 const options = {
 	title: '拍照',
 	// customButtons: [{ name: 'fb', title: 'Choose Photo' }],
-	mediaType:'photo',//'photo', 'video', or 'mixed' on iOS, 'photo' or 'video' on Android
+	mediaType: 'photo',//'photo', 'video', or 'mixed' on iOS, 'photo' or 'video' on Android
 	// maxWidth:2000,
 	// maxHeight:1200,
-	quality:0.6, //0 to 1, photos only
+	quality: 0.6, //0 to 1, photos only
 	storageOptions: {
 		skipBackup: true,
 		path: 'images',
@@ -36,35 +37,41 @@ export default class Home extends Component {
 		super(props);
 		this.navigation = props.navigation;
 		this.state = {
-			idNum:'', //身份ID
+			idNum: '', //身份ID
 			animating: false,
 		}
 	}
+
 	//显示浮层
 	showPopupLayer = () => {
 		this.popupDialog.show();
 	}
 
 	//显示关闭loading
-	showOrCloseLoading = () =>{
-		this.setState({ animating: !this.state.animating });
+	showOrCloseLoading = () => {
+		this.setState({animating: !this.state.animating});
 	}
 
-	openCamera = ()=>{
+	openCamera = () => {
 		console.log('打开摄像')
 		//通过获取设备相册图片
 		ImagePicker.launchImageLibrary(options, (response) => {
-			// Same code as in above section!
-			console.log(response)
-			var data = response.data;  //base64 data
+			// console.log(response)
+			var image = response.data;  //base64 data 并且encode
 			var fileSize = response.fileSize; //文件体积
-            console.log(fileSize);
 
 			//获取图片上面的文字
-            BaiduOcrServer.getIdInfoByOcr(data,function (res) {
+			BaiduOcrServer.getIdInfoByOcr(image, function (carId) {
 				//然后通过身份证ID获取设备信息
+				Server.getUserHealthInfoById(carId,function (res) {
+					//获取数据成功
 
-            })
+				},function (error) {
+					//获取失败 --没有用户信息
+					Alert.alert('提示', '没有和设备在一个局域网，将为您创建ID');
+					
+				})
+			})
 		});
 		/*ImagePicker.launchCamera(options, (response) => {
 			// Same code as in above section!
@@ -77,16 +84,16 @@ export default class Home extends Component {
 	creatNewUser = () => {
 		console.log(this.state.idNum);
 		let self = this;
-		if(this.state.idNum!=''){
+		if (this.state.idNum != '') {
 			//创建新用户
 			// this.showOrCloseLoading(); //显示LOADING
-			Server.postNewUser(this.state.idNum,function (res) {
+			Server.postNewUser(this.state.idNum, function (res) {
 				console.log(res);
 				let id = res.data.id;
 				globalData.currentId = id;
 				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
 			})
-		}else{
+		} else {
 			//输入值为空
 			Server.showAlert('输入值为空');
 		}
@@ -94,17 +101,25 @@ export default class Home extends Component {
 
 	render() {
 		return (
-			<View style={{height:'100%',display:'flex', flexDirection:'column',justifyContent:'center',paddingTop:80,paddingLeft:300,paddingRight:300}}>
+			<View style={{
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				paddingTop: 80,
+				paddingLeft: 300,
+				paddingRight: 300
+			}}>
 				<WingBlank size="lg">
 					<Card>
 						<Card.Header
 							title="用户"
-							thumbStyle={{ width: 30, height: 30 }}
+							thumbStyle={{width: 30, height: 30}}
 							thumb="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAELElEQVRYR7XXV6xmcxQF8N/oos1E96IEQ5QQNYPoZEQJordgIiJEJ6IFURO9BTNEl0wkeo3yoDwoEd2DLhi9Ez1rsr+b736+c86Vy05uJnfuPv//OnuvvfY6E4w95sdU7IGVsBiWwJ/4on7exJ24H7+M5egJY0haHOdgHwTE53gBn+ETzFlAlsIGWAQ/4yacWvmN17QBmAsn4iT8gfPxAF5qAT0vdsBBVa0fcRYuxO/DnmsCMAn3YQpuxrFdbzLk8LVwZgF6Btvj68G8YQBWxKNYErsXkDF0qjFlJ9xWLdsS7/RnDgIIsZ7HHFXC18Zzc9+zq1f7Qth1i7Cz/9wPIAR7CqthPbzyH13eO2YNPIe81MZF1FEAzivShe0p2f8Re+NW5K6QewRA5vl93FNz3nV5JiQkWxvLVH9vwfddD+JubIPlMKvXgmtrzkPAzHZTJD/IT6h578/7AZfh9KaRq+TJeB0zcEgOnAff4Ooat7aXSGv2wlu4BA/j3Rqxw4q4maBt8VfLQWnDzpgYAJHXCEyI8XTLQ7k4AKYjl/02JDcVOKK4dEHLWWlBwG8XAHnz3RDJbUOdqYjEblj6P+z8jO+zWKXO+7UBROQ7Uj4zAJ6sg1OJpshovoqw+PYOou1ZOVvgiZbcBzFfAKSfkcoDW5J3LPauimy8tgjJkpN9cENLYv42JQCyMNK72XPZEJvjcaw5BoFK+d/AfshoNsW54UsAfIsrcHJL8gK1SI7HpR0V6JF1HbzYknt2D0CkMfp/QMfBeZtUIpL6VUNuSJh2ZqdEU9rixkh+KvBQaUFI0xZZKJmE7IuthzieuXEVptUWndlx3mOZpgC4vAgTD9A0NjEZmf9IdiIVCIniGRLp+zFl1fJ79n604o4GEBnD7+I1AqBHsIxhqjEY+yLlinyGqHkwDidrtT9SnaNrN1yJBXEoIvODsVV5jqkBkJ/of4zkwQOZmyKlegS7DJQ9IxnTkphVzO89vkJdkIWTEc7Z/ZFW5cUm9ZZR3uhILI8PKzPMzzy/V1Ua6ukaSpz/XrSmYKFqzZeVG9C5I6Z1Wg9AZPht3IX9K/EUnFEGpUt8mnBkZcdBR2fSnsQ1pRGp0qf9jugoXIRdS/U+KF3PnhhPhD+R55B8o+LZcbg4h/YDCDNjuVfGaeVa0r97x3M7Mt7hUex5JuVlbFJWfxSA3BN3E9+WfxNBHa8wnog+xKzEd8QRRyFHzhxmy1OBqNnEYn5s2ngi5b++xnd9pLUj0fRhEoLEMm1WvUpL8hb/JuIXYz5jPkLEfFOG6KOi69swQpKtlQh744jiC+Lvh0W+C8Ob6Ek0JHEdDm9S2S4AOSCHhjyZkoXxU833RyVg+W5cGsuWW4pjzoqPcYkitn1L/oOEbSXOh0veKoYzX8ERlOyGbMDYq4+r1HE6PZfV2bK/Af3j5fqbtw09AAAAAElFTkSuQmCC"
 							extra=""
 						/>
 						<Card.Body>
-							<View style={{ height: 30,marginTop: 14 }}>
+							<View style={{height: 30, marginTop: 14}}>
 								{/*<Text style={{ marginLeft: 16 }}>账号信息</Text>*/}
 							</View>
 						</Card.Body>
@@ -115,10 +130,10 @@ export default class Home extends Component {
 					</Card>
 				</WingBlank>
 
-				<WhiteSpace size="lg" />
+				<WhiteSpace size="lg"/>
 
 
-				<WingBlank style={{marginTop:40}}>
+				<WingBlank style={{marginTop: 40}}>
 					<WhiteSpace/>
 					<Button type="primary" onClick={this.showPopupLayer}>创建个人健康档案</Button>
 					<WhiteSpace/>
@@ -128,7 +143,7 @@ export default class Home extends Component {
 					<WhiteSpace/>
 					{/*<Button type="primary" onClick={() => this.props.navigation.navigate('HomeTab')}>编辑当前用户信息</Button>*/}
 					{/*<Button type="primary" onClick={this.openCamera}>打开摄像头</Button>*/}
-						{/*<CameraButton photos={[]}/>*/}
+					{/*<CameraButton photos={[]}/>*/}
 					<WhiteSpace/>
 
 					{/*<Button  disabled style={{marginTop:10}}>个人基本信息表</Button>*/}
@@ -137,8 +152,16 @@ export default class Home extends Component {
 				</WingBlank>
 
 
-				<PopupDialog width={0.4} dialogTitle={<DialogTitle title="创建用户" />} ref={(popupDialog) => { this.popupDialog = popupDialog; }}>
-					<View style={{padding:30,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
+				<PopupDialog width={0.4} dialogTitle={<DialogTitle title="创建用户"/>} ref={(popupDialog) => {
+					this.popupDialog = popupDialog;
+				}}>
+					<View style={{
+						padding: 30,
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'center',
+						alignItems: 'center'
+					}}>
 						<TouchableHighlight onPress={this.openCamera}>
 							<Image style={styles.iconBase} source={require('../../assets/camera.png')}/>
 						</TouchableHighlight>
@@ -157,7 +180,7 @@ export default class Home extends Component {
 							ID
 						</InputItem>
 						<WhiteSpace/>
-						<Button style={{marginTop:20}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
+						<Button style={{marginTop: 20}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
 
 						{/*<ActivityIndicator text="Loading..." />*/}
 
@@ -173,9 +196,9 @@ export default class Home extends Component {
 }
 
 var styles = StyleSheet.create({
-	iconBase:{
-		width:60,
-		height:60,
-		marginBottom:20
+	iconBase: {
+		width: 60,
+		height: 60,
+		marginBottom: 20
 	}
 })
