@@ -82,6 +82,16 @@ class Server extends React.Component {
 			})
 	}
 
+	//post 获取用户信息
+	static getUserInfoById(cardId, callback) {
+		axios.post(BASE_URL + '?IdCardNo=' +cardId)
+			.then(function (response) {
+				callback(response)
+			})
+			.catch(function (error) {
+				Alert.alert('提示', error);
+			});
+	}
 	//post 创建新用户请求
 	static postNewUser(cardId, callback) {
 		var data = {
@@ -138,6 +148,11 @@ class Server extends React.Component {
 				// console.log(error);
 				Alert.alert('提示', error);
 			});
+	}
+
+	//同步本地数据
+	static syncGlobalData(data){
+		// globalData.userInfo
 	}
 
 }

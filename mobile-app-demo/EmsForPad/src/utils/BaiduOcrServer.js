@@ -57,8 +57,9 @@ class BaiduOcrServer extends React.Component {
 				}else {
 						let words_result = data.words_result;
 						let idNumber = words_result['公民身份号码']['words'];
-						console.log(idNumber);
-					  callback(idNumber);
+						let name = words_result['姓名']['words'];
+						console.log(idNumber,name);
+					  callback(idNumber,name);
 				}
 			})
 			.catch(function (error) {

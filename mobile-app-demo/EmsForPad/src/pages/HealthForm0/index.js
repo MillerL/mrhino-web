@@ -49,7 +49,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 		this.state = {
 			checksArr:checkList, //多选的数组对象
 			symptom: [], //症状
-			others:'', //其他症状
+			otherSymptom:'', //其他症状
 			percent: 40,
 
 		};
@@ -94,8 +94,8 @@ export default class HealthForm0 extends React.Component<any, any> {
 			}
 		}
 		//如果其他有输入，就push到症状里
-		if(this.state.others != ''){
-			this.state.symptom.push(this.state.others)
+		if(this.state.otherSymptom != ''){
+			this.state.symptom.push(this.state.otherSymptom)
 		}
 
 		return this.state.symptom;
@@ -161,10 +161,10 @@ export default class HealthForm0 extends React.Component<any, any> {
 
 					<InputItem style={{marginLeft: 40, marginTop: 10}}
 					           clear
-					           value={this.state.others}
+					           value={this.state.otherSymptom}
 					           onChange={(value: any) => {
 						           this.setState({
-							           others: value,
+							           otherSymptom: value,
 						           });
 					           }}
 					           placeholder=""

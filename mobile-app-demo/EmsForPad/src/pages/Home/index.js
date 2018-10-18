@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Text, View, Image, StyleSheet, TouchableHighlight, Alert} from 'react-native';
 import PopupDialog, {DialogTitle} from 'react-native-popup-dialog';
 import {ActivityIndicator, Card, WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox, Button} from 'antd-mobile-rn';
-import base64 from 'react-native-base64'
+import Spinner from 'react-native-loading-spinner-overlay';
 import Server from '../../utils/Server';
 import BaiduOcrServer from '../../utils/BaiduOcrServer';
 import globalData from '../../config/globalData';
@@ -31,13 +31,13 @@ export default class Home extends Component {
 		// 设置 title
 		title: "首页"
 	};
-
-
 	constructor(props) {
 		super(props);
 		this.navigation = props.navigation;
 		this.state = {
+			spinner: false, //LOADING
 			idNum: '', //身份ID
+			Name:'',//用户姓名
 			animating: false,
 		}
 	}
@@ -61,21 +61,22 @@ export default class Home extends Component {
 			var image = response.data;  //base64 data 并且encode
 			var fileSize = response.fileSize; //文件体积
 
+			//显示LOADING
+			
 			//获取图片上面的文字
-			BaiduOcrServer.getIdInfoByOcr(image, function (carId) {
+			BaiduOcrServer.getIdInfoByOcr(image, function (carId,name) {
 				self.setState({idNum:carId})
+				self.setState({Name:name})
 			})
 		});
 		/*ImagePicker.launchCamera(options, (response) => {
 			// Same code as in above section!
 			console.log(response)
 			var data = response.data;
-
 		});*/
 	}
 	//创建新用户
 	creatNewUser = () =>{
-		console.log(this.state.idNum);
 		let self = this;
 		let cardId = this.state.idNum;
 		if (cardId != '') {
@@ -83,14 +84,11 @@ export default class Home extends Component {
 			Server.getUserHealthInfoById(cardId,function (data) {
 				//获取数据成功,把获取到的设备数据存到 globalData
 				globalData.userHealthInfoFromEquenment.push(data);
+				addNewUser(cardId);
 			},function (error) {
 				//获取失败 --没有用户信息
-				Alert.alert('提示', '没有和设备在一个局域网，将为您创建ID', [
-						  // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
-						  // {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-							{text: 'OK', onPress: () => addNewUser(cardId)}
-						],
-					{ cancelable: false });
+					Alert.alert('提示', '没有和设备在一个局域网，无法获取设备数据',
+					[{text: 'OK', onPress: () => addNewUser(cardId)}], { cancelable: false });
 			})
 		} else {
 			//输入值为空
@@ -98,14 +96,27 @@ export default class Home extends Component {
 		}
 
 		function addNewUser(cardId) {
-			//创建新用户
-			Server.postNewUser(cardId, function (res) {
-				console.log(res);
-				//拿到数据ID
-				let id = res.data.id;
-				globalData.currentId = id;
-				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+			console.log('addNewUser')
+			//先判断数据库里是否有该用户
+			/*Server.getUserInfoById(cardId,function (res) {
+				var data = res.data;
+				if(data.length > 0){
+					//该用户存在 --获取用户数据
+
+
+				}else {
+					//该用户不存在-创建用户
+					//创建新用户
+					Server.postNewUser(cardId, function (res) {
+						console.log(res);
+						//拿到数据ID
+						let id = res.data.id;
+						globalData.currentId = id;
+						self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+					})
+				}
 			})
+*/
 		}
 	}
 
@@ -130,22 +141,20 @@ export default class Home extends Component {
 						/>
 						<Card.Body>
 							<View style={{height: 30, marginTop: 14}}>
-								{/*<Text style={{ marginLeft: 16 }}>账号信息</Text>*/}
+								<Text style={{marginLeft: 16}}>{this.state.userName}</Text>
 							</View>
 						</Card.Body>
-						{/*<Card.Footer style={{ marginBottom: 14 }}
-							content="IdCardNo"
-							extra="3702111982051*****"
-						/>*/}
+						<Card.Footer style={{marginBottom: 14}}
+						             content="IdCardNo"
+						             extra={this.state.idNum}
+						/>
 					</Card>
 				</WingBlank>
-
 				<WhiteSpace size="lg"/>
-
 
 				<WingBlank style={{marginTop: 40}}>
 					<WhiteSpace/>
-					<Button type="primary" onClick={this.showPopupLayer}>创建个人健康档案</Button>
+					<Button type="primary" onClick={this.showPopupLayer}>读取个人健康档案</Button>
 					<WhiteSpace/>
 					<WhiteSpace/>
 					<Button type="primary" onClick={() => this.props.navigation.navigate('UserList')}>用户列表</Button>
@@ -190,13 +199,18 @@ export default class Home extends Component {
 							ID
 						</InputItem>
 						<WhiteSpace/>
-						<Button style={{marginTop: 20}} type="primary" onClick={this.creatNewUser}>创建个人健康档案</Button>
+						<Button style={{marginTop: 20}} type="primary" onClick={this.creatNewUser}>读取个人健康档案</Button>
 
 						{/*<ActivityIndicator text="Loading..." />*/}
 
 					</View>
 				</PopupDialog>
 
+				<Spinner
+					visible={this.state.spinner}
+					textContent={'Loading...'}
+					textStyle={styles.spinnerTextStyle}
+				/>
 
 			</View>
 
@@ -206,6 +220,9 @@ export default class Home extends Component {
 }
 
 var styles = StyleSheet.create({
+	spinnerTextStyle: {
+		color: '#FFF'
+	},
 	iconBase: {
 		width: 60,
 		height: 60,
