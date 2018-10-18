@@ -30,7 +30,7 @@ class Server extends React.Component {
 		axios.post(Equipment_URL,mydata).then((response) => {
 				// var string = JSON.stringify(response);
 				console.log(response);
-				callback(response)
+				callback(response);
 				/*var ResultCode = response.ResultCode;
 				if (ResultCode !== 0) {
 					//结果代码。0：请求成功；其它：异常

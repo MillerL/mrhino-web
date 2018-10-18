@@ -53,6 +53,7 @@ export default class Home extends Component {
 	}
 
 	openCamera = () => {
+		let self = this;
 		console.log('打开摄像')
 		//通过获取设备相册图片
 		ImagePicker.launchImageLibrary(options, (response) => {
@@ -62,15 +63,7 @@ export default class Home extends Component {
 
 			//获取图片上面的文字
 			BaiduOcrServer.getIdInfoByOcr(image, function (carId) {
-				//然后通过身份证ID获取设备信息
-				Server.getUserHealthInfoById(carId,function (res) {
-					//获取数据成功
-
-				},function (error) {
-					//获取失败 --没有用户信息
-					Alert.alert('提示', '没有和设备在一个局域网，将为您创建ID');
-					
-				})
+				self.setState({idNum:carId})
 			})
 		});
 		/*ImagePicker.launchCamera(options, (response) => {
@@ -81,21 +74,38 @@ export default class Home extends Component {
 		});*/
 	}
 	//创建新用户
-	creatNewUser = () => {
+	creatNewUser = () =>{
 		console.log(this.state.idNum);
 		let self = this;
-		if (this.state.idNum != '') {
-			//创建新用户
-			// this.showOrCloseLoading(); //显示LOADING
-			Server.postNewUser(this.state.idNum, function (res) {
-				console.log(res);
-				let id = res.data.id;
-				globalData.currentId = id;
-				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+		let cardId = this.state.idNum;
+		if (cardId != '') {
+			//然后通过身份证ID获取设备信息
+			Server.getUserHealthInfoById(cardId,function (data) {
+				//获取数据成功,把获取到的设备数据存到 globalData
+				globalData.userHealthInfoFromEquenment.push(data);
+			},function (error) {
+				//获取失败 --没有用户信息
+				Alert.alert('提示', '没有和设备在一个局域网，将为您创建ID', [
+						  // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+						  // {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+							{text: 'OK', onPress: () => addNewUser(cardId)}
+						],
+					{ cancelable: false });
 			})
 		} else {
 			//输入值为空
 			Server.showAlert('输入值为空');
+		}
+
+		function addNewUser(cardId) {
+			//创建新用户
+			Server.postNewUser(cardId, function (res) {
+				console.log(res);
+				//拿到数据ID
+				let id = res.data.id;
+				globalData.currentId = id;
+				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+			})
 		}
 	}
 
