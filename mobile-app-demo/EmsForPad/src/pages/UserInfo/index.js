@@ -28,10 +28,11 @@ export default class UserInfo extends Component{
 	componentWillMount(){
 		let self = this;
 		console.log('currentCheckUserId' + globalData.currentCheckUserId);
-		Server.getUserInfo(globalData.currentCheckUserId,function (res) {
+		Server.getUserInfoById(globalData.currentCheckUserId,function (res) {
 			var data = res.data;
 			console.log(data)
 			self.setState({
+				Name:data.Name,
 				IdCardNo:data.IdCardNo,
 				GeneralSymptoms: data.GeneralSymptoms[0],
 				symptom:data.symptom
@@ -48,6 +49,11 @@ export default class UserInfo extends Component{
 						<Accordion.Panel header="ID">
 							<List>
 								<List.Item>{this.state.IdCardNo}</List.Item>
+							</List>
+						</Accordion.Panel>
+						<Accordion.Panel header="姓名">
+							<List>
+								<List.Item>{this.state.Name}</List.Item>
 							</List>
 						</Accordion.Panel>
 						<Accordion.Panel header="症状">

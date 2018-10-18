@@ -5016,6 +5016,13 @@ react-native-linear-gradient@^2.4.2:
   resolved "http://registry.npm.taobao.org/react-native-linear-gradient/download/react-native-linear-gradient-2.4.2.tgz#9d3acd0a198b9d4566e8f6253ef1f60fef0ff2be"
   integrity sha1-nTrNChmLnUVm6PYlPvH2D+8P8r4=
 
+react-native-loading-spinner-overlay@^1.0.1:
+  version "1.0.1"
+  resolved "http://registry.npm.taobao.org/react-native-loading-spinner-overlay/download/react-native-loading-spinner-overlay-1.0.1.tgz#07f85a072b6f7d05b8749668cd626df4cc330347"
+  integrity sha1-B/haBytvfQW4dJZozWJt9MwzA0c=
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-menu@^0.23.0:
   version "0.23.0"
   resolved "http://registry.npm.taobao.org/react-native-menu/download/react-native-menu-0.23.0.tgz#3c023239aed95d419275df50c199982ad7eb062b"

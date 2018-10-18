@@ -51,7 +51,6 @@ export default class HealthForm0 extends React.Component<any, any> {
 			symptom: [], //症状
 			otherSymptom:'', //其他症状
 			percent: 40,
-
 		};
 		console.log(this.state)
 	};
@@ -63,10 +62,15 @@ export default class HealthForm0 extends React.Component<any, any> {
 		this.setState({ percent: p });
 	}
 	//同步数据
-	syncData =()=>{
-		var pageData = this.handleWithData();
-		console.log(pageData)
+	syncData =() =>{
+		let self = this;
+		
+	}
+	//上传数据
+	uploadData =()=>{
+		this.handleWithData();
 		//判断是否输入为空
+		let pageData = this.state.symptom;
 		if(pageData.length > 0){
 			var pageString = pageData.join();
 			console.log(pageString)
@@ -93,13 +97,6 @@ export default class HealthForm0 extends React.Component<any, any> {
 				}
 			}
 		}
-		//如果其他有输入，就push到症状里
-		if(this.state.otherSymptom != ''){
-			this.state.symptom.push(this.state.otherSymptom)
-		}
-
-		return this.state.symptom;
-
 	}
 
 	render() {
@@ -175,7 +172,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 				</List>
 
 				<View style={mystyles.fixedBtn}>
-					<Button type="primary" onClick={this.syncData}>同步</Button>
+					<Button type="primary" onClick={this.uploadData}>上传数据</Button>
 				</View>
 			</View>
 		);

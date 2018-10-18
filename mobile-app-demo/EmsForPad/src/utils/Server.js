@@ -93,9 +93,10 @@ class Server extends React.Component {
 			});
 	}
 	//post 创建新用户请求
-	static postNewUser(cardId, callback) {
+	static postNewUser(cardId, Name, callback) {
 		var data = {
-			IdCardNo: cardId
+			IdCardNo: cardId,
+			Name:Name
 		}
 		axios.post(BASE_URL, data)
 			.then(function (response) {
@@ -121,7 +122,7 @@ class Server extends React.Component {
 			});
 	}
 
-	//get 拉取用户信息
+	/*//get 拉取用户信息
 	static getUserInfo(id, callback) {
 		console.log(BASE_URL + id)
 		axios.get(BASE_URL + id)
@@ -133,7 +134,7 @@ class Server extends React.Component {
 				// console.log(error);
 				Alert.alert('提示', error);
 			});
-	}
+	}*/
 
 	//put 更新个人健康档案
 	static postHealthInfo(data, callback) {
@@ -152,7 +153,17 @@ class Server extends React.Component {
 
 	//同步本地数据
 	static syncGlobalData(data){
-		// globalData.userInfo
+		globalData.userInfo.Name = data.Name;
+		globalData.userInfo.IdCardNo = data.IdCardNo;
+		if(data.symptom){
+			globalData.userInfo.symptom = data.symptom;
+		}
+		if(data.otherSymptom){
+			globalData.userInfo.otherSymptom = data.otherSymptom;
+		}
+		if(data.GeneralSymptoms){
+			globalData.userInfo.GeneralSymptoms = data.GeneralSymptoms;
+		}
 	}
 
 }

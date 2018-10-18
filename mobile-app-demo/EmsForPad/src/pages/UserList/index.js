@@ -35,9 +35,10 @@ export default class UserList extends Component{
 			})
 		})
 	}
-	showUserInfo(id){
-		console.log(id)
-		globalData.currentCheckUserId = id;
+	//通过用户身份证信息查询数据
+	showUserInfo(IdCardNo){
+		console.log(IdCardNo)
+		globalData.currentCheckUserId = IdCardNo; //把身份证存储到 待查看的身份信息
 		this.props.navigation.navigate('UserInfo')
 	}
 
@@ -62,8 +63,8 @@ export default class UserList extends Component{
 							this.state.userList.map((item,id)=>{
 							return(
 								<View key={id}>
-									<Item onClick={() => this.showUserInfo(item.id)} thumb="https://os.alipayobjects.com/rmsportal/mOoPurdIfmcuqtr.png" arrow="horizontal">
-										{item.IdCardNo}
+									<Item onClick={() => this.showUserInfo(item.IdCardNo)} thumb="https://os.alipayobjects.com/rmsportal/mOoPurdIfmcuqtr.png" arrow="horizontal">
+										{item.Name}
 									</Item>
 								</View>
 							)
