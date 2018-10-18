@@ -82,14 +82,18 @@ export default class Home extends Component {
 		let self = this;
 		let cardId = this.state.idNum;
 		let Name = this.state.Name;
+		console.log('cardId=' + cardId);
 		if (cardId != '') {
 			//然后通过身份证ID获取设备信息
+			self.setState({spinner: true});//显示LOADING
 			Server.getUserHealthInfoById(cardId,function (data) {
+				self.setState({spinner: false});//关闭LOADING
 				//获取数据成功,把获取到的设备数据存到 globalData
 				globalData.userHealthInfoFromEquenment.push(data);
 				addNewUser(cardId,Name);
 			},function (error) {
-				//获取失败 --没有用户信息
+					self.setState({spinner: false});//关闭LOADING
+					//获取失败 --没有用户信息
 					Alert.alert('提示', '没有和设备在一个局域网，无法获取设备数据',
 					[{text: 'OK', onPress: () => addNewUser(cardId,Name)}], { cancelable: false });
 			})
@@ -98,19 +102,21 @@ export default class Home extends Component {
 			Server.showAlert('输入值为空');
 		}
 
-		function addNewUser(cardId) {
-			console.log('addNewUser')
+		function addNewUser(cardId,Name) {
 			//先判断数据库里是否有该用户
+			console.log(cardId);
 			Server.getUserInfoById(cardId,function (res) {
 				var data = res.data;
+				console.log(data)
 				if(data.length > 0){
 					//该用户存在 --获取用户数据--同步数据到本地
+					console.log('有用户数据');
 					Server.syncGlobalData(data);
 					self.props.navigation.navigate('HomeTab');//跳转填写健康档案
-
 				}else {
 					//该用户不存在-创建用户
 					//创建新用户
+					console.log('addNewUser')
 					self.setState({spinner: true});//显示LOADING
 					Server.postNewUser(cardId,Name, function (res) {
 						console.log(res);

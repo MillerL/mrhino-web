@@ -84,6 +84,7 @@ class Server extends React.Component {
 
 	//post 获取用户信息
 	static getUserInfoById(cardId, callback) {
+		console.log('cardId'+cardId)
 		axios.post(BASE_URL + '?IdCardNo=' +cardId)
 			.then(function (response) {
 				callback(response)

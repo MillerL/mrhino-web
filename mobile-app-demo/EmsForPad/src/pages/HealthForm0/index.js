@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Text, View, Image, ViewStyle, StyleSheet, Alert} from 'react-native';
+import {Text, View, Image, ViewStyle, StyleSheet, Alert,TouchableHighlight} from 'react-native';
 import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button} from 'antd-mobile-rn';
 // import view from '../../config/globalData';
 import Server from '../../utils/Server';
+import globalData from '../../config/globalData';
 
 
 const CheckboxItem = Checkbox.CheckboxItem;
@@ -64,7 +65,25 @@ export default class HealthForm0 extends React.Component<any, any> {
 	//同步数据
 	syncData =() =>{
 		let self = this;
-		
+		var symptom = globalData.userInfo.symptom;
+		var otherSymptom= globalData.userInfo.otherSymptom;
+		if(symptom !== ''){
+			//字符串转数据-循环匹配
+			var symptomArr = symptom.split(',');
+			for (var i = 0; i < symptomArr.length; i++) {
+				var name = symptomArr[i];
+				for (var j = 0; j < checkList.length; j++) {
+					var obj = checkList[j];
+					if(name == obj.name){
+						obj.checkStatus = true;
+					}
+				}
+			}
+			self.setState({checksArr:checkList});
+		}
+		if(otherSymptom !== ''){
+			self.setState({otherSymptom:otherSymptom});
+		}
 	}
 	//上传数据
 	uploadData =()=>{
@@ -99,6 +118,12 @@ export default class HealthForm0 extends React.Component<any, any> {
 		}
 	}
 
+	//渲染之前初始化数据
+	componentWillMount(){
+		let self = this;
+		// console.log('currentCheckUserId' + globalData.currentCheckUserId);
+		self.syncData(); //同步
+	}
 	render() {
 		const styles = {
 			marginTop: 80,
@@ -115,14 +140,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 					</View>
 					<Text style={{marginTop:10}}>填写进度 {this.state.percent}%</Text>
 				</View>
-				<Button
-					style={{ width: 50, marginLeft: 10 }}
-					type="ghost"
-					size="small"
-					onClick={this.onAdd}
-				>
-					(+-)10
-				</Button>
+
 				<WhiteSpace />
 				{/*<Progress percent={5} />*/}
 
@@ -156,19 +174,21 @@ export default class HealthForm0 extends React.Component<any, any> {
 
 					</WingBlank>
 
-					<InputItem style={{marginLeft: 40, marginTop: 10}}
-					           clear
-					           value={this.state.otherSymptom}
-					           onChange={(value: any) => {
-						           this.setState({
-							           otherSymptom: value,
-						           });
-					           }}
-					           placeholder=""
-					>
-						其他
-					</InputItem>
-
+					<Flex direction='row' justify='start'>
+						<InputItem style={{marginLeft: 40, marginTop: 10}}
+						           clear
+						           value={this.state.otherSymptom}
+						           onChange={(value: any) => {
+							           this.setState({
+								           otherSymptom: value,
+							           });
+						           }}
+						           placeholder="">其他
+						</InputItem>
+						<TouchableHighlight onPress={this.openCamera}>
+							<Image style={mystyles.iconBase} source={require('../../assets/camera.png')}/>
+						</TouchableHighlight>
+					</Flex>
 				</List>
 
 				<View style={mystyles.fixedBtn}>
@@ -180,6 +200,10 @@ export default class HealthForm0 extends React.Component<any, any> {
 }
 
 const mystyles = StyleSheet.create({
+	iconBase: {
+		width: 30,
+		height: 30,
+	},
 	checkStyle: {
 		marginBottom: 30,
 		marginTop: 30,
