@@ -18,7 +18,7 @@ const globalData = {
 		IdCardNo: '371525198611103734',//用户身份证ID
 		symptom: '', //症状
 		otherSymptom: '', //其他症状
-		GeneralSymptoms: [
+		GeneralSymptoms: [  //一般症状
 			{
 				Temp: '',//体温
 				PR: '',//脉率
@@ -34,7 +34,28 @@ const globalData = {
 				agedEmotionStatus: 0, //老年人情感状态
 				// intelligenceScore: '',//智力得分
 				// emotionScore: '',//抑郁评分得分
-			}]
+			}],
+		lifeStyle: [{  //生活方式
+			trainRate: '',  //锻炼频率
+			exerciseTimeByMin: '',  //锻炼时间/分钟
+			exerciseTimeByYear: '',  //锻炼时间/年
+			exerciseWay: '',  //锻炼方式
+			foodHabit: '', //饮食习惯
+
+			smokingStatus: '', //吸烟状况
+			smokingNumsByDay: '', //日均几只烟
+			startSmokingAge: '', //开始吸烟年龄
+			stopSmokingAge: '', //戒烟年龄
+
+			drinkingStatus: '',//喝酒状况
+			drinkingByDay: '',//日饮酒量
+			isOutAlcohol: '',//是否戒酒
+			startDrinkingAge: '',//开始饮酒年龄
+			isDrinkingThisYear: '',//近一年内是否曾醉酒
+
+			odh: '',//职业病危害因素接触史
+			poisonType: '',//毒物种类
+		}]
 	}
 
 };

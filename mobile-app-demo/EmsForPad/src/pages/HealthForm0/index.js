@@ -10,31 +10,6 @@ import config from '../../config/config';
 
 
 const CheckboxItem = Checkbox.CheckboxItem;
-const checkList = [
-	{checkStatus: false, name: '无症状'}, {checkStatus: false, name: '头晕'}, {
-		checkStatus: false,
-		name: '头晕'
-	}, {checkStatus: false, name: '心悸'},
-	{checkStatus: false, name: '胸闷'}, {checkStatus: false, name: '胸痛'}, {
-		checkStatus: false,
-		name: '慢性咳嗽'
-	}, {checkStatus: false, name: '咳痰'},
-	{checkStatus: false, name: '呼吸困难'}, {checkStatus: false, name: '多饮'}, {
-		checkStatus: false,
-		name: '多尿'
-	}, {checkStatus: false, name: '体重下降'},
-	{checkStatus: false, name: '乏力'}, {checkStatus: false, name: '关节肿痛'}, {
-		checkStatus: false,
-		name: '视力模糊'
-	}, {checkStatus: false, name: '手脚麻木'},
-	{checkStatus: false, name: '尿急'}, {checkStatus: false, name: '尿痛便秘'}, {
-		checkStatus: false,
-		name: '便秘'
-	}, {checkStatus: false, name: '腹泻'},
-	{checkStatus: false, name: '恶心呕吐'}, {checkStatus: false, name: '眼花'}, {
-		checkStatus: false,
-		name: '耳鸣'
-	}, {checkStatus: false, name: '乳房胀痛'}];
 
 type Props = {};
 
@@ -42,16 +17,13 @@ function onChange(value: any) {
 	console.log('changed', value);
 }
 export default class HealthForm0 extends React.Component<any, any> {
-	static navigationOptions = {
-		// 设置 title
-		title: "首页"
-	};
+	static navigationOptions = {title: "首页"};
 
 	constructor(props: any, context: any) {
 		super(props, context);
 		this.navigation = props.navigation;
 		this.state = {
-			checksArr:checkList, //多选的数组对象
+			checksArr:config.checkList, //多选的数组对象
 			symptomArray: [], //症状数组
 			
 			symptom: '', //症状
@@ -69,6 +41,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 	}
 	//同步数据
 	syncData =() =>{
+		console.log('同步数据')
 		let self = this;
 		var symptom = globalData.userInfo.symptom;
 		var otherSymptom= globalData.userInfo.otherSymptom;
@@ -77,14 +50,14 @@ export default class HealthForm0 extends React.Component<any, any> {
 			var symptomArr = symptom.split(',');
 			for (var i = 0; i < symptomArr.length; i++) {
 				var name = symptomArr[i];
-				for (var j = 0; j < checkList.length; j++) {
-					var obj = checkList[j];
+				for (var j = 0; j < config.checkList.length; j++) {
+					var obj = config.checkList[j];
 					if(name == obj.name){
 						obj.checkStatus = true;
 					}
 				}
 			}
-			self.setState({checksArr:checkList});
+			self.setState({checksArr:config.checkList});
 		}
 		if(otherSymptom !== ''){
 			self.setState({otherSymptom:otherSymptom});
@@ -192,7 +165,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 					<WingBlank style={{marginBottom: 5}}>
 
 						<Flex direction="row" wrap="wrap" style={{padding:20}}>
-							{checkList.map((item,id)=>{
+							{config.checkList.map((item,id)=>{
 								return(
 									<View key={id} style={{marginLeft:60,marginBottom:40}}>
 										<Checkbox
@@ -223,7 +196,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 							<Image style={mystyles.iconBase} source={require('../../assets/camera.png')}/>
 						</TouchableHighlight>
 					</Flex>
-					<View >
+					<WingBlank>
 						<TextareaItem
 							rows={4}  value={this.state.otherSymptom}
 							onChange={(value: any) => {
@@ -232,7 +205,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 								});
 							}}
 							placeholder="" autoHeight style={{ paddingVertical: 5 }} />
-					</View>
+					</WingBlank>
 				</List>
 
 				<View style={mystyles.fixedBtn}>

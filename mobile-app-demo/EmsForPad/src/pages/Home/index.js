@@ -37,7 +37,14 @@ export default class Home extends Component {
 		let self = this;
 		if(self.state.idNum !== ''){
 			//点击进入编辑用户健康档案
-			self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+			self.setState({spinner: true});//显示LOADING
+			//获取用户信息
+			Server.getUserInfoById(self.state.idNum,function (res) {
+				self.setState({spinner: false});//关闭LOADING
+				let data = res.data;
+				Server.syncGlobalData(data[0]); //同步用户数据到本地
+				self.props.navigation.navigate('HomeTab');//跳转填写健康档案
+			})
 		}else {
 			//用户为空
 		}

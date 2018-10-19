@@ -87,6 +87,7 @@ class Server extends React.Component {
 		console.log('cardId'+cardId)
 		axios.get(BASE_URL + '?IdCardNo=' +cardId)
 			.then(function (response) {
+				console.log(response)
 				callback(response)
 			})
 			.catch(function (error) {
@@ -165,6 +166,8 @@ class Server extends React.Component {
 		if(data.GeneralSymptoms){
 			globalData.userInfo.GeneralSymptoms = data.GeneralSymptoms;
 		}
+
+		console.log(globalData.userInfo)
 	}
 
 }
