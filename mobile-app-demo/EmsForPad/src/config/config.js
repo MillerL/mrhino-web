@@ -11,7 +11,16 @@ const config = {
 			skipBackup: false,
 			path: 'images',
 		},
-	}
+	},
+
+
+	//一般症状
+	configData : {
+        agedLiveStatus:['满意','基本满意','说不清楚','不太满意','不满意'],
+        agedSelfCareStatus:['可自理（0~3分）','轻度依赖（4~8分）','中度依赖（9~18分）','不能自理（≥19分）'],
+        agedCognitive:['粗筛阴性','粗筛阳性'],
+        agedEmotionStatus:['粗筛阴性','粗筛阳性']
+    }
 
 };
 

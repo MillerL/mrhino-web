@@ -2,14 +2,9 @@ import React, {Component} from 'react';
 import { ScrollView, Text, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
 import { Button, Flex, WhiteSpace, WingBlank,List,InputItem, Radio } from 'antd-mobile-rn';
 import Server from "../../utils/Server";
+import globalData from '../../config/globalData';
 // import view from './view';
 const RadioItem = Radio.RadioItem;
-const configData = {
-	agedLiveStatus:['满意','基本满意','说不清楚','不太满意','不满意'],
-	agedSelfCareStatus:['可自理（0~3分）','轻度依赖（4~8分）','中度依赖（9~18分）','不能自理（≥19分）'],
-	agedCognitive:['粗筛阴性','粗筛阳性'],
-	agedEmotionStatus:['粗筛阴性','粗筛阳性']
-}
 
 
 export default class HealthForm1 extends Component<Props> {
@@ -17,29 +12,54 @@ export default class HealthForm1 extends Component<Props> {
 		super(props);
 		this.navigation = props.navigation;
 		this.state ={
-			Temp:'',//体温
-			PR:'',//脉率
-			Resp:'', //呼吸频率
-			NibpAver:'',//血压（平均压）
-			Height:'',//身高
-			Weight:'',//体重
-			waistline: '',//腰围
-			bmi: '',//体质指数
+            GeneralSymptoms:{
+                Temp:'',//体温
+                PR:'',//脉率
+                Resp:'', //呼吸频率
+                NibpAver:'',//血压（平均压）
+                Height:'',//身高
+                Weight:'',//体重
+                waistline: '',//腰围
+                bmi: '',//体质指数
 
-			agedLiveStatus: 0,//老年人生活状态自我评估
-			agedSelfCareStatus: 0, //老年人生活自理能力自我评估
-			agedCognitive: 0, //老年人认知功能
-			agedEmotionStatus: 0, //老年人情感状态
-
+                agedLiveStatus: '',//老年人生活状态自我评估
+                agedSelfCareStatus: '', //老年人生活自理能力自我评估
+                agedCognitive: '', //老年人认知功能
+                agedEmotionStatus: '', //老年人情感状态
+			},
 			intelligenceScore: '',//智力得分
 			emotionScore: '',//抑郁评分得分
 
 		}
 	}
 	//同步数据
-	syncData =()=>{
+    syncData =()=>{
+		let GeneralSymptoms = globalData.userInfo.GeneralSymptoms[0];
+        GeneralSymptoms.agedLiveStatus = fintIndexInData(configData.agedLiveStatus,GeneralSymptoms.agedLiveStatus)
+        GeneralSymptoms.agedSelfCareStatus = fintIndexInData(configData.agedSelfCareStatus,GeneralSymptoms.agedSelfCareStatus)
+        GeneralSymptoms.agedCognitive = fintIndexInData(configData.agedCognitive,GeneralSymptoms.agedCognitive)
+        GeneralSymptoms.agedEmotionStatus = fintIndexInData(configData.agedEmotionStatus,GeneralSymptoms.agedEmotionStatus)
+
+        console.log(GeneralSymptoms);
+        this.setState({GeneralSymptoms: GeneralSymptoms})
+
+		function fintIndexInData(arr,value) {
+        	if (value != ''){
+                for (var i = 0; i < arr.length; i++) {
+                    var obj = arr[i];
+                    if (obj == value){
+                        var index = i.toString();
+                        return index
+                    }
+                }
+			}
+        }
+	}
+	//上传数据
+	uploadData =()=>{
+		let self = this;
 		//处理数据
-		var data  = [{
+		/*var data  = [{
 			Temp:this.state.Temp,//体温
 			PR:this.state.PR,//脉率
 			Resp:this.state.Resp, //呼吸频率
@@ -52,12 +72,40 @@ export default class HealthForm1 extends Component<Props> {
 			agedSelfCareStatus: configData.agedSelfCareStatus[this.state.agedSelfCareStatus], //老年人生活自理能力自我评估
 			agedCognitive: configData.agedCognitive[this.state.agedCognitive], //老年人认知功能
 			agedEmotionStatus: configData.agedEmotionStatus[this.state.agedEmotionStatus], //老年人情感状态]
-		}]
-		console.log(data);
-		Server.postHealthInfo({GeneralSymptoms:data},function (res) {
+		}]*/
+
+		var myData = self.state.GeneralSymptoms;
+
+		//手动修改单选的值
+		if(myData.agedLiveStatus != ''){
+			var index = parseInt(myData.agedLiveStatus);
+            myData.agedLiveStatus = configData.agedLiveStatus[index]//老年人生活状态自我评估
+		}
+		if(myData.agedSelfCareStatus != ''){
+			var index = parseInt(myData.agedSelfCareStatus);
+            myData.agedSelfCareStatus = configData.agedSelfCareStatus[index]//老年人生活自理能力自我评估
+		}
+		if(myData.agedCognitive != ''){
+			var index = parseInt(myData.agedCognitive);
+            myData.agedCognitive = configData.agedCognitive[index]//老年人认知功能
+		}
+		if(myData.agedEmotionStatus != ''){
+			var index = parseInt(myData.agedEmotionStatus);
+            myData.agedEmotionStatus = configData.agedEmotionStatus[index]//老年人情感状态]
+		}
+
+		let dataArr = []; dataArr.push(myData)
+		console.log(dataArr);
+		Server.postHealthInfo({GeneralSymptoms:dataArr},function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
 		})
+	}
+
+	//更新数据setstate
+	setData = (key,newValue) =>{
+        this.state.GeneralSymptoms[key] = newValue
+        this.setState({GeneralSymptoms: this.state.GeneralSymptoms})
 	}
 
 	render() {
@@ -69,10 +117,10 @@ export default class HealthForm1 extends Component<Props> {
 							<Flex.Item style={mystyles.flexItemStyle}>
 								<InputItem
 									clear
-									value={this.state.Temp}
+									value={this.state.GeneralSymptoms.Temp}
 									extra="℃"
 									onChange={(value: any) => {
-										this.setState({Temp: value});
+										this.setData(Temp,value);
 									}}
 									placeholder=""
 								>
@@ -85,7 +133,8 @@ export default class HealthForm1 extends Component<Props> {
 									value={this.state.PR}
 									extra="次/分钟"
 									onChange={(value: any) => {
-										this.setState({PR: value});
+										// this.setState({PR: value});
+                                        this.setData(PR,value);
 									}}
 									placeholder=""
 								>
@@ -97,7 +146,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.Resp}
 									onChange={(value: any) => {
-										this.setState({Resp: value});
+										// this.setState({Resp: value});
+                                        this.setData(Resp,value);
 									}}
 									extra="次/分钟"
 									placeholder=""
@@ -112,7 +162,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.NibpAver}
 									onChange={(value: any) => {
-										this.setState({NibpAver: value});
+										// this.setState({NibpAver: value});
+                                        this.setData(NibpAver,value);
 									}}
 									extra="mmHg"
 									placeholder=""
@@ -125,7 +176,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.HeightM}
 									onChange={(value: any) => {
-										this.setState({HeightM: value});
+										// this.setState({HeightM: value});
+                                        this.setData(HeightM,value);
 									}}
 									extra="CM"
 									placeholder=""
@@ -138,7 +190,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.Weight}
 									onChange={(value: any) => {
-										this.setState({Weight: value});
+										// this.setState({Weight: value});
+                                        this.setData(Weight,value);
 									}}
 									extra="kg"
 									placeholder=""
@@ -153,7 +206,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.waistline}
 									onChange={(value: any) => {
-										this.setState({waistline: value});
+										// this.setState({waistline: value});
+                                        this.setData(waistline,value);
 									}}
 									extra="mmHg"
 									placeholder=""
@@ -166,7 +220,8 @@ export default class HealthForm1 extends Component<Props> {
 									clear
 									value={this.state.bmi}
 									onChange={(value: any) => {
-										this.setState({bmi: value});
+										// this.setState({bmi: value});
+                                        this.setData(bmi,value);
 									}}
 									extra="Kg/m2"
 									placeholder=""
@@ -185,50 +240,55 @@ export default class HealthForm1 extends Component<Props> {
 						<Flex.Item style={mystyles.flexItemColumnStyle}>
 							<List renderHeader={() => '老年人健康状态自我评估*'}>
 								<RadioItem
-									checked={this.state.agedLiveStatus === 0}
+									checked={this.state.agedLiveStatus === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedLiveStatus: 0 });
+											// this.setState({ agedLiveStatus: 0 });
+                                            this.setData(agedLiveStatus,'0');
 										}
 									}}
 								>
 									满意
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedLiveStatus === 1}
+									checked={this.state.agedLiveStatus === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedLiveStatus: 1 });
+											// this.setState({ agedLiveStatus: 1 });
+                                            this.setData(agedLiveStatus,'1');
 										}
 									}}
 								>
 									基本满意
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedLiveStatus === 2}
+									checked={this.state.agedLiveStatus === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedLiveStatus: 2 });
+											// this.setState({ agedLiveStatus: 2 });
+                                            this.setData(agedLiveStatus,'2');
 										}
 									}}
 								>
 									说不清楚
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedLiveStatus === 3}
+									checked={this.state.agedLiveStatus === '3'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedLiveStatus: 3 });
+											// this.setState({ agedLiveStatus: 3 });
+                                            this.setData(agedLiveStatus,'3');
 										}
 									}}
 								>
 									不太满意
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedLiveStatus === 4}
+									checked={this.state.agedLiveStatus === '4'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedLiveStatus: 4 });
+											// this.setState({ agedLiveStatus: 4 });
+                                            this.setData(agedLiveStatus,'4');
 										}
 									}}
 								>
@@ -239,40 +299,44 @@ export default class HealthForm1 extends Component<Props> {
 						<Flex.Item style={mystyles.flexItemColumnStyle}>
 							<List renderHeader={() => '老年人生活自理能力自我评估*'}>
 								<RadioItem
-									checked={this.state.agedSelfCareStatus === 0}
+									checked={this.state.agedSelfCareStatus === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedSelfCareStatus: 0 });
+											// this.setState({ agedSelfCareStatus: 0 });
+                                            this.setData(agedSelfCareStatus,'0');
 										}
 									}}
 								>
 									可自理（0～3分）
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedSelfCareStatus === 1}
+									checked={this.state.agedSelfCareStatus === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedSelfCareStatus: 1 });
+											// this.setState({ agedSelfCareStatus: 1 });
+                                            this.setData(agedSelfCareStatus,'1');
 										}
 									}}
 								>
 									轻度依赖（4～8分）
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedSelfCareStatus === 2}
+									checked={this.state.agedSelfCareStatus === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedSelfCareStatus: 2 });
+											// this.setState({ agedSelfCareStatus: 2 });
+                                            this.setData(agedSelfCareStatus,'2');
 										}
 									}}
 								>
 									中度依赖（9～18分)
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedSelfCareStatus === 3}
+									checked={this.state.agedSelfCareStatus === '3'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedSelfCareStatus: 3 });
+											// this.setState({ agedSelfCareStatus: 3 });
+                                            this.setData(agedSelfCareStatus,'3');
 										}
 									}}
 								>
@@ -283,20 +347,22 @@ export default class HealthForm1 extends Component<Props> {
 						<Flex.Item style={mystyles.flexItemColumnStyle}>
 							<List renderHeader={() => '老年人认知功能*'}>
 								<RadioItem
-									checked={this.state.agedCognitive === 0}
+									checked={this.state.agedCognitive === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedCognitive: 0 });
+											// this.setState({ agedCognitive: 0 });
+                                            this.setData(agedCognitive,'0');
 										}
 									}}
 								>
 									粗筛阴性
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedCognitive === 1}
+									checked={this.state.agedCognitive === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedCognitive: 1 });
+											// this.setState({ agedCognitive: 1 });
+                                            this.setData(agedCognitive,'1');
 										}
 									}}
 								>
@@ -320,20 +386,22 @@ export default class HealthForm1 extends Component<Props> {
 						<Flex.Item style={mystyles.flexItemColumnStyle}>
 							<List renderHeader={() => '老年人情感状态*'}>
 								<RadioItem
-									checked={this.state.agedEmotionStatus === 0}
+									checked={this.state.agedEmotionStatus === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedEmotionStatus: 0 });
+											// this.setState({ agedEmotionStatus: 0 });
+                                            this.setData(agedEmotionStatus,'0');
 										}
 									}}
 								>
 									粗筛阴性
 								</RadioItem>
 								<RadioItem
-									checked={this.state.agedEmotionStatus === 1}
+									checked={this.state.agedEmotionStatus === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({ agedEmotionStatus: 1 });
+											// this.setState({ agedEmotionStatus: 1 });
+                                            this.setData(agedEmotionStatus,'1');
 										}
 									}}
 								>
@@ -359,7 +427,7 @@ export default class HealthForm1 extends Component<Props> {
 				</ScrollView>
 
 				<View style={mystyles.fixedBtn}>
-					<Button type="primary" onClick={this.syncData}>同步</Button>
+					<Button type="primary" onClick={this.uploadData}>同步</Button>
 				</View>
 			</View>
 
