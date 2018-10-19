@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 import {Text, View, Image, ViewStyle, StyleSheet, Alert,TouchableHighlight} from 'react-native';
-import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button} from 'antd-mobile-rn';
+import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button,TextareaItem} from 'antd-mobile-rn';
 // import view from '../../config/globalData';
 import Server from '../../utils/Server';
 import globalData from '../../config/globalData';
+import BaiduOcrServer from "../../utils/BaiduOcrServer";
+import ImagePicker from "react-native-image-picker";
+import config from '../../config/config';
 
 
 const CheckboxItem = Checkbox.CheckboxItem;
@@ -49,7 +52,9 @@ export default class HealthForm0 extends React.Component<any, any> {
 		this.navigation = props.navigation;
 		this.state = {
 			checksArr:checkList, //多选的数组对象
-			symptom: [], //症状
+			symptomArray: [], //症状数组
+			
+			symptom: '', //症状
 			otherSymptom:'', //其他症状
 			percent: 40,
 		};
@@ -87,15 +92,20 @@ export default class HealthForm0 extends React.Component<any, any> {
 	}
 	//上传数据
 	uploadData =()=>{
-		this.handleWithData();
+		let self = this;
+		self.handleWithData();
 		//判断是否输入为空
-		let pageData = this.state.symptom;
-		if(pageData.length > 0){
-			var pageString = pageData.join();
+		let sArray = self.state.symptomArray;
+		let otherSymptom = self.state.otherSymptom;
+
+		if(sArray.length > 0 || otherSymptom!==''){
+			var pageString = sArray.join();
 			console.log(pageString)
 			var data = {
-				symptom : pageString
+				symptom : pageString,
+				otherSymptom:otherSymptom
 			}
+			console.log(data)
 			Server.postHealthInfo(data,function (res) {
 				console.log(res)
 				Server.showAlert('同步成功');
@@ -107,15 +117,47 @@ export default class HealthForm0 extends React.Component<any, any> {
 	//处理数据
 	handleWithData =()=>{
 		//遍历数组找出勾选的项目
-		if(this.state.checksArr.length > 0){
-			for (var i =0; i < this.state.checksArr.length; i++) {
-				var obj = this.state.checksArr[i];
-				if(obj['checkStatus'] == true){
+		let self = this;
+		let checksArr = self.state.checksArr;
+		if(checksArr.length > 0){
+			for (var i =0; i < checksArr.length; i++) {
+				var obj = checksArr[i];
+				if(obj.checkStatus == true){
 					//PUSH到预制数组
-					this.state.symptom.push(obj.name)
+					self.state.symptomArray.push(obj.name)
 				}
 			}
 		}
+	}
+
+	//OCR获取文字信息
+	openCamera = () => {
+		let self = this;
+		console.log('打开摄像')
+		//通过获取设备相册图片
+		ImagePicker.launchImageLibrary(config.image_picker_options, (response) => {
+			// console.log(response)
+			var image = response.data;  //base64 data 并且encode
+			self.setState({spinner: true});//显示LOADING
+			//获取图片上面的文字
+			BaiduOcrServer.getTextInfoByOcr(image, function (words) {
+				console.log(words)
+				let wordsArr =[];
+				if(words.length >0){
+					for (var i = 0; i < words.length; i++) {
+						var obj = words[i];
+						wordsArr.push(obj.words +',')
+					}
+				}
+				let wordStr = wordsArr.join();
+				self.setState({otherSymptom: wordStr})  //识别其他症状
+			})
+		});
+		/*ImagePicker.launchCamera(options, (response) => {
+			// Same code as in above section!
+			console.log(response)
+			var data = response.data;
+		});*/
 	}
 
 	//渲染之前初始化数据
@@ -171,24 +213,26 @@ export default class HealthForm0 extends React.Component<any, any> {
 							})}
 						</Flex>
 
-
 					</WingBlank>
 
-					<Flex direction='row' justify='start'>
-						<InputItem style={{marginLeft: 40, marginTop: 10}}
-						           clear
-						           value={this.state.otherSymptom}
-						           onChange={(value: any) => {
-							           this.setState({
-								           otherSymptom: value,
-							           });
-						           }}
-						           placeholder="">其他
-						</InputItem>
+					<Flex direction='row' justify='start' align='start'>
+						<Text style={{marginTop: 12, marginLeft: 14, marginBottom: 10}}>
+							其他
+						</Text>
 						<TouchableHighlight onPress={this.openCamera}>
 							<Image style={mystyles.iconBase} source={require('../../assets/camera.png')}/>
 						</TouchableHighlight>
 					</Flex>
+					<View >
+						<TextareaItem
+							rows={4}  value={this.state.otherSymptom}
+							onChange={(value: any) => {
+								this.setState({
+									otherSymptom: value,
+								});
+							}}
+							placeholder="" autoHeight style={{ paddingVertical: 5 }} />
+					</View>
 				</List>
 
 				<View style={mystyles.fixedBtn}>
@@ -203,6 +247,7 @@ const mystyles = StyleSheet.create({
 	iconBase: {
 		width: 30,
 		height: 30,
+		marginLeft:40
 	},
 	checkStyle: {
 		marginBottom: 30,

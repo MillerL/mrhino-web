@@ -7,7 +7,8 @@ import globalData from '../config/globalData'
 
 //POST
 const getTokenUrl = 'https://aip.baidubce.com/oauth/2.0/token'; //获取token的链接
-const apiUrlId = 'https://aip.baidubce.com/rest/2.0/ocr/v1/idcard';
+const apiUrlId = 'https://aip.baidubce.com/rest/2.0/ocr/v1/idcard';  //身份证信息接口
+const apiUrlBasic = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic';  //通用文字识别信息接口
 const apiKey = 'a1jhOF0tGckqmMRSA7vgIGfP'; //应用的API Key
 const secretKey = '2GfouEv4wtCQrK7KyYPH7Qjba2AS7Ap8'; //应用的Secret Key
 
@@ -66,7 +67,34 @@ class BaiduOcrServer extends React.Component {
 				// console.log(error);
 				Alert.alert('提示', error);
 				//如果Token过期，这里写重新获取token.
+			});
+	}
 
+	// POST ocr 获取普通文字信息
+	static getTextInfoByOcr(image, callback) {
+		var myData = {
+			image: image
+		}
+		var dataEnCode = qs.stringify(myData);
+		// console.log(dataEnCode)
+		axios({
+			method: 'post',
+			url: apiUrlBasic + '?access_token=' + access_token,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			data: dataEnCode// 直接传递内容
+		})
+			.then(function (response) {
+				console.log(response);
+				var data = response.data;
+				let words = data.words_result;
+				callback(words);
+			})
+			.catch(function (error) {
+				// console.log(error);
+				Alert.alert('提示', error);
+				//如果Token过期，这里写重新获取token.
 			});
 	}
 

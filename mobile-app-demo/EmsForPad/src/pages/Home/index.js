@@ -9,21 +9,8 @@ import globalData from '../../config/globalData';
 import UserList from "../UserList";
 // import CameraButton from "../../utils/CameraButton";
 import ImagePicker from 'react-native-image-picker';
+import config from '../../config/config';
 
-
-//image-picker 配置
-const options = {
-	title: '拍照',
-	// customButtons: [{ name: 'fb', title: 'Choose Photo' }],
-	mediaType: 'photo',//'photo', 'video', or 'mixed' on iOS, 'photo' or 'video' on Android
-	// maxWidth:2000,
-	// maxHeight:1200,
-	quality: 0.6, //0 to 1, photos only
-	storageOptions: {
-		skipBackup: false,
-		path: 'images',
-	},
-};
 
 export default class Home extends Component {
 	// 自定义当前页面路由配置，后面介绍的TabNavigator也使用这个对象中的属性
@@ -60,7 +47,7 @@ export default class Home extends Component {
 		let self = this;
 		console.log('打开摄像')
 		//通过获取设备相册图片
-		ImagePicker.launchImageLibrary(options, (response) => {
+		ImagePicker.launchImageLibrary(config.image_picker_options, (response) => {
 			// console.log(response)
 			var image = response.data;  //base64 data 并且encode
 			var fileSize = response.fileSize; //文件体积
@@ -106,12 +93,13 @@ export default class Home extends Component {
 			//先判断数据库里是否有该用户
 			console.log(cardId);
 			Server.getUserInfoById(cardId,function (res) {
+				console.log(res)
 				var data = res.data;
-				console.log(data)
 				if(data.length > 0){
 					//该用户存在 --获取用户数据--同步数据到本地
 					console.log('有用户数据');
-					Server.syncGlobalData(data);
+					Server.syncGlobalData(data[0]);
+					globalData.currentDataId = data[0].id;
 					self.props.navigation.navigate('HomeTab');//跳转填写健康档案
 				}else {
 					//该用户不存在-创建用户
@@ -135,6 +123,14 @@ export default class Home extends Component {
 		}
 	}
 
+
+	componentWillMount(){
+		let self = this;
+		self.setState({
+			idNum:globalData.userInfo.IdCardNo,
+			Name:globalData.userInfo.Name
+		})
+	}
 	render() {
 		return (
 			<View style={{
@@ -157,7 +153,7 @@ export default class Home extends Component {
 							/>
 							<Card.Body>
 								<View style={{height: 30, marginTop: 14}}>
-									<Text style={{marginLeft: 16}}>{this.state.userName}</Text>
+									<Text style={{marginLeft: 16}}>{this.state.Name}</Text>
 								</View>
 							</Card.Body>
 							<Card.Footer style={{marginBottom: 14}} content="IdCardNo" extra={this.state.idNum}/>
