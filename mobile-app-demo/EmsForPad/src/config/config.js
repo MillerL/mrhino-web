@@ -50,8 +50,8 @@ const config = {
 	//生活方式
 	configLifeStyle: {
 		trainRate: ['每天', '每周一次以上', '偶尔', '不锻炼'],
-		foodHabit: [{checkStatus: false, name: '荤素均衡'},
-			{checkStatus: false, name: '荤食为主'}, {checkStatus: false, name: '素食为主'},
+		foodHabit: [
+			{checkStatus: false, name: '荤素均衡'}, {checkStatus: false, name: '荤食为主'}, {checkStatus: false, name: '素食为主'},
 			{checkStatus: false, name: '嗜盐'}, {checkStatus: false, name: '嗜油'}, {checkStatus: false, name: '嗜糖'}],
 		smokingStatus:['从不吸烟', '已戒烟', '吸烟'],
 		drinkingStatus:['从不', '偶尔', '经常','每天'],

@@ -15,6 +15,8 @@ export default class HealthForm2 extends Component<Props> {
 		this.navigation = props.navigation;
 		this.state = {
 			foodHabitArr : config.configLifeStyle.foodHabit,
+			foodHabitCheckedArr:[], //选中的饮食习惯
+
 
 			lifeStyle: {
 				trainRate: '',  //锻炼频率
@@ -55,16 +57,48 @@ export default class HealthForm2 extends Component<Props> {
 //上传数据
 	uploadData = () => {
 		let self = this;
-		var myData = self.state.GeneralSymptoms;
+		let myData = self.state.lifeStyle;
+
+		self.handleWithData();
+		let foodHabitArr = self.state.foodHabitCheckedArr;
+
+		//处理多选--饮食习惯
+		if(foodHabitArr.length > 0 ){
+			var foodHabitString = foodHabitArr.join();
+			console.log(foodHabitString)
+			myData.foodHabit = foodHabitString;
+		};
+		myData.trainRate = config.configLifeStyle.trainRate[parseInt(myData.trainRate)]
+		myData.smokingStatus = config.configLifeStyle.smokingStatus[parseInt(myData.smokingStatus)]
+		myData.drinkingStatus = config.configLifeStyle.drinkingStatus[parseInt(myData.drinkingStatus)]
+		myData.isOutAlcohol = config.configLifeStyle.isOutAlcohol[parseInt(myData.isOutAlcohol)]
+		myData.odh = config.configLifeStyle.odh[parseInt(myData.odh)]
+		myData.poisonType = config.configLifeStyle.poisonType[parseInt(myData.poisonType)]
 
 		let dataArr = [];
 		dataArr.push(myData)
 		console.log(dataArr);
-		Server.postHealthInfo({GeneralSymptoms: dataArr}, function (res) {
+		Server.postHealthInfo({lifeStyle: dataArr}, function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
 		})
 	}
+	//处理数据
+	handleWithData =()=>{
+		//遍历数组找出勾选的项目
+		let self = this;
+		let checksArr = self.state.foodHabitArr;
+		if(checksArr.length > 0){
+			for (var i =0; i < checksArr.length; i++) {
+				var obj = checksArr[i];
+				if(obj.checkStatus == true){
+					//PUSH到预制数组
+					self.state.foodHabitCheckedArr.push(obj.name)
+				}
+			}
+		}
+	}
+
 	render() {
 		return (
 			<View style={{flex: 1, height: '100%'}}>
@@ -78,10 +112,10 @@ export default class HealthForm2 extends Component<Props> {
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
 									style={{fontSize: 40}}
-									checked={this.state.lifeStyle.trainRate === 1}
+									checked={this.state.lifeStyle.trainRate === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({trainRate: 1});
+											this.setData('trainRate', '0');
 										}
 									}}
 									style={{borderWidth: 1, borderColor: '#999', margin: 10}}
@@ -89,10 +123,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.trainRate === 2}
+									checked={this.state.lifeStyle.trainRate === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({trainRate: 2});
+											this.setData('trainRate', '1');
 										}
 									}}
 									style={{borderWidth: 1, borderColor: '#999', margin: 10}}
@@ -100,10 +134,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.trainRate === 3}
+									checked={this.state.lifeStyle.trainRate === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({trainRate: 3});
+											this.setData('trainRate', '2');
 										}
 									}}
 									style={{borderWidth: 1, borderColor: '#999', margin: 10}}
@@ -111,10 +145,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.trainRate === 4}
+									checked={this.state.lifeStyle.trainRate === '3'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({trainRate: 4});
+											this.setData('trainRate', '3');
 										}
 									}}
 									style={{borderWidth: 1, borderColor: '#999', margin: 10}}
@@ -127,7 +161,7 @@ export default class HealthForm2 extends Component<Props> {
 									clear
 									value={this.state.lifeStyle.exerciseTimeByMin}
 									onChange={(value: any) => {
-										this.setState({exerciseTimeByMin, value});
+										this.setData('exerciseTimeByMin', value);
 									}}
 									extra="分钟"
 									placeholder=""
@@ -141,7 +175,7 @@ export default class HealthForm2 extends Component<Props> {
 									clear
 									value={this.state.lifeStyle.exerciseTimeByYear}
 									onChange={(value: any) => {
-										this.setState({exerciseTimeByYear, value});
+										this.setData('exerciseTimeByYear', value);
 									}}
 									extra="年"
 									placeholder=""
@@ -156,7 +190,7 @@ export default class HealthForm2 extends Component<Props> {
 									clear
 									value={this.state.lifeStyle.exerciseWay}
 									onChange={(value: any) => {
-										this.setState({exerciseWay, value});
+										this.setData('exerciseWay', value);
 									}}
 									placeholder=""
 								>
@@ -170,10 +204,27 @@ export default class HealthForm2 extends Component<Props> {
 					<List renderHeader={() => '饮食习惯'}>
 						<Flex direction="row" justify="between" align='start'>
 							<Flex.Item style={{paddingBottom: 14}}>
-								<CheckboxItem
+
+								{config.configLifeStyle.foodHabit.map((item,id)=>{
+									return(
+										<CheckboxItem key={id}
+											checked={this.state.foodHabitArr[id]["checkStatus"]}
+											onChange={(event: any) => {
+												let objfoodHabitArr = this.state.foodHabitArr;
+												objfoodHabitArr[id]["checkStatus"] =  event.target.checked;
+												this.setData({foodHabitArr: objfoodHabitArr}, function () {
+												});
+											}}
+										>
+											{item.name}
+										</CheckboxItem>
+									)
+								})}
+
+							{/*	<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit0}
 									onChange={(event: any) => {
-										this.setState({foodHabit0: event.target.checked}, function () {
+										this.setData({foodHabit0: event.target.checked}, function () {
 										});
 									}}
 								>
@@ -184,7 +235,7 @@ export default class HealthForm2 extends Component<Props> {
 								<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit1}
 									onChange={(event: any) => {
-										this.setState({foodHabit1: event.target.checked}, function () {
+										this.setData({foodHabit1: event.target.checked}, function () {
 										});
 									}}
 								>
@@ -195,7 +246,7 @@ export default class HealthForm2 extends Component<Props> {
 								<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit2}
 									onChange={(event: any) => {
-										this.setState({foodHabit2: event.target.checked}, function () {
+										this.setData({foodHabit2: event.target.checked}, function () {
 										});
 									}}
 								>
@@ -206,7 +257,7 @@ export default class HealthForm2 extends Component<Props> {
 								<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit3}
 									onChange={(event: any) => {
-										this.setState({foodHabit3: event.target.checked}, function () {
+										this.setData({foodHabit3: event.target.checked}, function () {
 										});
 									}}
 								>
@@ -217,7 +268,7 @@ export default class HealthForm2 extends Component<Props> {
 								<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit4}
 									onChange={(event: any) => {
-										this.setState({foodHabit4: event.target.checked}, function () {
+										this.setData({foodHabit4: event.target.checked}, function () {
 										});
 									}}
 								>
@@ -228,12 +279,12 @@ export default class HealthForm2 extends Component<Props> {
 								<CheckboxItem
 									checked={this.state.lifeStyle.foodHabit5}
 									onChange={(event: any) => {
-										this.setState({foodHabit5: event.target.checked}, function () {
+										this.setData({foodHabit5: event.target.checked}, function () {
 										});
 									}}
 								>
 									嗜糖
-								</CheckboxItem>
+								</CheckboxItem>*/}
 							</Flex.Item>
 						</Flex>
 					</List>
@@ -245,10 +296,10 @@ export default class HealthForm2 extends Component<Props> {
 						<Flex direction="row" justify="between" align='start' style={styles.flexStyle}>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem style={{fontSize: 40}}
-								           checked={this.state.lifeStyle.smokingStatus === 1}
+								           checked={this.state.lifeStyle.smokingStatus === '0'}
 								           onChange={(event: any) => {
 									           if (event.target.checked) {
-										           this.setState({smokingStatus: 1});
+										           this.setData('smokingStatus', '0');
 									           }
 								           }}
 								           style={styles.RadioItemStyle}
@@ -256,10 +307,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.smokingStatus === 2}
+									checked={this.state.lifeStyle.smokingStatus === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({smokingStatus: 2});
+											this.setData('smokingStatus', '1');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -267,10 +318,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.smokingStatus === 3}
+									checked={this.state.lifeStyle.smokingStatus === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({smokingStatus: 3});
+											this.setData('smokingStatus', '2');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -284,7 +335,7 @@ export default class HealthForm2 extends Component<Props> {
 									type="number"
 									value={this.state.lifeStyle.smokingNumsByDay}
 									onChange={(value: any) => {
-										this.setState({smokingNumsByDay, value});
+										this.setData('smokingNumsByDay', value);
 									}}
 									extra="支"
 									placeholder=""
@@ -299,7 +350,7 @@ export default class HealthForm2 extends Component<Props> {
 									type="number"
 									value={this.state.lifeStyle.startSmokingAge}
 									onChange={(value: any) => {
-										this.setState({startSmokingAge, value});
+										this.setData('startSmokingAge', value);
 									}}
 									extra="岁"
 									placeholder=""
@@ -314,7 +365,7 @@ export default class HealthForm2 extends Component<Props> {
 									clear
 									value={this.state.lifeStyle.stopSmokingAge}
 									onChange={(value: any) => {
-										this.setState({stopSmokingAge, value});
+										this.setData('stopSmokingAge', value);
 									}}
 									extra="岁"
 									placeholder=""
@@ -334,10 +385,10 @@ export default class HealthForm2 extends Component<Props> {
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
 									style={{fontSize: 40}}
-									checked={this.state.lifeStyle.drinkingStatus === 1}
+									checked={this.state.lifeStyle.drinkingStatus === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({drinkingStatus: 1});
+											this.setData('drinkingStatus', '0');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -345,10 +396,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.drinkingStatus === 2}
+									checked={this.state.lifeStyle.drinkingStatus === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({drinkingStatus: 2});
+											this.setData('drinkingStatus', '1');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -356,10 +407,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.drinkingStatus === 3}
+									checked={this.state.lifeStyle.drinkingStatus === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({drinkingStatus: 3});
+											this.setData('drinkingStatus', '2');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -367,10 +418,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.drinkingStatus === 4}
+									checked={this.state.lifeStyle.drinkingStatus === '3'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({drinkingStatus: 4});
+											this.setData('drinkingStatus', '3');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -382,7 +433,7 @@ export default class HealthForm2 extends Component<Props> {
 							type="number"
 							value={this.state.lifeStyle.drinkingByDay}
 							onChange={(value: any) => {
-								this.setState({drinkingByDay, value});
+								this.setData('drinkingByDay', value);
 							}}
 							extra="两"
 							placeholder=""
@@ -397,10 +448,10 @@ export default class HealthForm2 extends Component<Props> {
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
 									style={{fontSize: 40}}
-									checked={this.state.lifeStyle.isOutAlcohol === 1}
+									checked={this.state.lifeStyle.isOutAlcohol === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({isOutAlcohol: 1});
+											this.setData('isOutAlcohol', '0');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -408,10 +459,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.isOutAlcohol === 2}
+									checked={this.state.lifeStyle.isOutAlcohol === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({isOutAlcohol: 2});
+											this.setData('isOutAlcohol', '1');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -426,7 +477,7 @@ export default class HealthForm2 extends Component<Props> {
 									type="number"
 									value={this.state.lifeStyle.startDrinkingAge}
 									onChange={(value: any) => {
-										this.setState({startDrinkingAge, value});
+										this.setData('startDrinkingAge', value);
 									}}
 									extra="岁"
 									placeholder=""
@@ -446,10 +497,10 @@ export default class HealthForm2 extends Component<Props> {
 									<Flex.Item style={styles.flexItemColumnStyle}>
 										<RadioItem
 											style={{fontSize: 40}}
-											checked={this.state.lifeStyle.isDrinkingThisYear === 1}
+											checked={this.state.lifeStyle.isDrinkingThisYear === '0'}
 											onChange={(event: any) => {
 												if (event.target.checked) {
-													this.setState({isDrinkingThisYear: 1});
+													this.setData('isDrinkingThisYear','0');
 												}
 											}}
 											style={styles.RadioItemStyle}
@@ -457,10 +508,10 @@ export default class HealthForm2 extends Component<Props> {
 									</Flex.Item>
 									<Flex.Item style={styles.flexItemColumnStyle}>
 										<RadioItem
-											checked={this.state.lifeStyle.isDrinkingThisYear === 2}
+											checked={this.state.lifeStyle.isDrinkingThisYear === '1'}
 											onChange={(event: any) => {
 												if (event.target.checked) {
-													this.setState({isDrinkingThisYear: 2});
+													this.setData('isDrinkingThisYear','1');
 												}
 											}}
 											style={styles.RadioItemStyle}
@@ -478,10 +529,10 @@ export default class HealthForm2 extends Component<Props> {
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
 									style={{fontSize: 40}}
-									checked={this.state.lifeStyle.odh === 1}
+									checked={this.state.lifeStyle.odh === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({odh: 1});
+											this.setData('odh', '0');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -489,10 +540,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.odh === 2}
+									checked={this.state.lifeStyle.odh === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({odh: 2});
+											this.setData('odh', '1');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -507,10 +558,10 @@ export default class HealthForm2 extends Component<Props> {
 						<Flex direction="row" justify="between">
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.poisonType === 1}
+									checked={this.state.lifeStyle.poisonType === '0'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({poisonType: 1});
+											this.setData('poisonType', '0');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -518,10 +569,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.poisonType === 2}
+									checked={this.state.lifeStyle.poisonType === '1'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({poisonType: 2});
+											this.setData('poisonType', '1');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -529,10 +580,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.poisonType === 3}
+									checked={this.state.lifeStyle.poisonType === '2'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({poisonType: 3});
+											this.setData('poisonType', '2');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -540,10 +591,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.poisonType === 4}
+									checked={this.state.lifeStyle.poisonType === '3'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({poisonType: 4});
+											this.setData('poisonType', '3');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -551,10 +602,10 @@ export default class HealthForm2 extends Component<Props> {
 							</Flex.Item>
 							<Flex.Item style={styles.flexItemColumnStyle}>
 								<RadioItem
-									checked={this.state.lifeStyle.poisonType === 5}
+									checked={this.state.lifeStyle.poisonType === '4'}
 									onChange={(event: any) => {
 										if (event.target.checked) {
-											this.setState({poisonType: 5});
+											this.setData('poisonType', '4');
 										}
 									}}
 									style={styles.RadioItemStyle}
@@ -566,7 +617,7 @@ export default class HealthForm2 extends Component<Props> {
 				</ScrollView>
 
 				<View style={mystyles.fixedBtn}>
-					<Button type="primary" onClick={this.syncData}>同步</Button>
+					<Button type="primary" onClick={this.uploadData}>同步</Button>
 				</View>
 			</View>
 

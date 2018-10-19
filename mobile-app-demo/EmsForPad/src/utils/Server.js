@@ -166,6 +166,9 @@ class Server extends React.Component {
 		if(data.GeneralSymptoms){
 			globalData.userInfo.GeneralSymptoms = data.GeneralSymptoms;
 		}
+		if(data.lifeStyle){
+			globalData.userInfo.lifeStyle = data.lifeStyle;
+		}
 
 		console.log(globalData.userInfo)
 	}

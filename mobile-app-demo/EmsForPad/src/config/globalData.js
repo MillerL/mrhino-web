@@ -40,7 +40,7 @@ const globalData = {
 			exerciseTimeByMin: '',  //锻炼时间/分钟
 			exerciseTimeByYear: '',  //锻炼时间/年
 			exerciseWay: '',  //锻炼方式
-			foodHabit: '', //饮食习惯
+			foodHabit:'', //饮食习惯
 
 			smokingStatus: '', //吸烟状况
 			smokingNumsByDay: '', //日均几只烟
