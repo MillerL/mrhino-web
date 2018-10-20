@@ -7,15 +7,10 @@ import globalData from '../../config/globalData';
 import BaiduOcrServer from "../../utils/BaiduOcrServer";
 import ImagePicker from "react-native-image-picker";
 import config from '../../config/config';
-
-
-const CheckboxItem = Checkbox.CheckboxItem;
+import Util from '../../utils/Util';
 
 type Props = {};
 
-function onChange(value: any) {
-	console.log('changed', value);
-}
 export default class HealthForm0 extends React.Component<any, any> {
 	static navigationOptions = {title: "首页"};
 
@@ -25,20 +20,13 @@ export default class HealthForm0 extends React.Component<any, any> {
 		this.state = {
 			checksArr:config.checkList, //多选的数组对象
 			symptomArray: [], //症状数组
-			
 			symptom: '', //症状
 			otherSymptom:'', //其他症状
-			percent: 40,
+			percent: 0,  //整体进度
 		};
 		console.log(this.state)
 	};
-	onAdd = () => {
-		let p = this.state.percent + 10;
-		if (this.state.percent >= 100) {
-			p = 0;
-		}
-		this.setState({ percent: p });
-	}
+
 	//同步数据
 	syncData =() =>{
 		console.log('同步数据')
@@ -62,6 +50,8 @@ export default class HealthForm0 extends React.Component<any, any> {
 		if(otherSymptom !== ''){
 			self.setState({otherSymptom:otherSymptom});
 		}
+		//同步进度条
+		this.setState({ percent: globalData.inputProgress });
 	}
 	//上传数据
 	uploadData =()=>{
@@ -82,6 +72,10 @@ export default class HealthForm0 extends React.Component<any, any> {
 			Server.postHealthInfo(data,function (res) {
 				console.log(res)
 				Server.showAlert('同步成功');
+				let data=res.data;
+				Server.syncGlobalData(data); //同步global数据
+				//同步进度条
+				this.setState({ percent: globalData.inputProgress });
 			})
 		}else {
 			Server.showAlert('输入值为空');
@@ -155,7 +149,6 @@ export default class HealthForm0 extends React.Component<any, any> {
 					</View>
 					<Text style={{marginTop:10}}>填写进度 {this.state.percent}%</Text>
 				</View>
-
 				<WhiteSpace />
 				{/*<Progress percent={5} />*/}
 
@@ -209,7 +202,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 				</List>
 
 				<View style={mystyles.fixedBtn}>
-					<Button type="primary" onClick={this.uploadData}>上传数据</Button>
+					<Button type="primary" onClick={this.uploadData}>同步</Button>
 				</View>
 			</View>
 		);

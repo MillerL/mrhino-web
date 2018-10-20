@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {ScrollView, Text, TouchableWithoutFeedback, View, StyleSheet} from 'react-native';
-import {Button, Flex, WhiteSpace, WingBlank, Checkbox, List, InputItem, Radio} from 'antd-mobile-rn';
+import {Button, Flex, WhiteSpace, WingBlank, Checkbox, List, InputItem, Radio,Progress} from 'antd-mobile-rn';
 import Server from "../../utils/Server";
 import globalData from '../../config/globalData';
 import config from '../../config/config';
+import Util from '../../utils/Util';
 // import view from './view';
 const RadioItem = Radio.RadioItem;
 const CheckboxItem = Checkbox.CheckboxItem;
@@ -14,9 +15,9 @@ export default class HealthForm2 extends Component<Props> {
 		super(props);
 		this.navigation = props.navigation;
 		this.state = {
+			percent: 0,
 			foodHabitArr : config.configLifeStyle.foodHabit,
 			foodHabitCheckedArr:[], //选中的饮食习惯
-
 
 			lifeStyle: {
 				trainRate: '',  //锻炼频率
@@ -52,9 +53,56 @@ export default class HealthForm2 extends Component<Props> {
 	//初始化数据
 	componentWillMount() {
 		let self = this;
-		// self.syncData(); //初始化页面的时候同步数据
+		self.syncData(); //初始化页面的时候同步数据
 	}
-//上传数据
+	//同步数据
+	syncData = () => {
+		console.log('同步数据')
+		let self = this;
+		let lifeStyle = globalData.userInfo.lifeStyle[0];
+		lifeStyle.trainRate = fintIndexInData(config.configLifeStyle.trainRate, lifeStyle.trainRate)
+		lifeStyle.smokingStatus = fintIndexInData(config.configLifeStyle.smokingStatus, lifeStyle.smokingStatus)
+		lifeStyle.drinkingStatus = fintIndexInData(config.configLifeStyle.drinkingStatus, lifeStyle.drinkingStatus)
+		lifeStyle.isOutAlcohol = fintIndexInData(config.configLifeStyle.isOutAlcohol, lifeStyle.isOutAlcohol)
+		lifeStyle.odh = fintIndexInData(config.configLifeStyle.odh, lifeStyle.odh)
+		lifeStyle.poisonType = fintIndexInData(config.configLifeStyle.poisonType, lifeStyle.poisonType)
+		this.setState({lifeStyle: lifeStyle});
+
+		//单选字符串转数字
+		let foodHabit = lifeStyle.foodHabit;
+		console.log(foodHabit);
+
+		//设置饮食习惯
+		if(foodHabit !== ''){
+			//字符串转数据-循环匹配
+			let foodHabitArr = foodHabit.split(',');
+			for (let i = 0; i < foodHabitArr.length; i++) {
+				let name = foodHabitArr[i];
+				for (let j = 0; j < config.configLifeStyle.foodHabit.length; j++) {
+					let obj = config.configLifeStyle.foodHabit[j];
+					if(name == obj.name){
+						obj.checkStatus = true;
+					}
+				}
+			}
+			self.setState({foodHabitArr:config.configLifeStyle.foodHabit});
+		}
+
+		function fintIndexInData(arr, value) {
+			if (value != '') {
+				for (let i = 0; i < arr.length; i++) {
+					let obj = arr[i];
+					if (obj == value) {
+						let index = i.toString();
+						return index
+					}
+				}
+			}
+		}
+		//同步进度条
+		this.setState({ percent: globalData.inputProgress });
+	}
+  //上传数据
 	uploadData = () => {
 		let self = this;
 		let myData = self.state.lifeStyle;
@@ -64,7 +112,7 @@ export default class HealthForm2 extends Component<Props> {
 
 		//处理多选--饮食习惯
 		if(foodHabitArr.length > 0 ){
-			var foodHabitString = foodHabitArr.join();
+			let foodHabitString = foodHabitArr.join();
 			console.log(foodHabitString)
 			myData.foodHabit = foodHabitString;
 		};
@@ -81,6 +129,11 @@ export default class HealthForm2 extends Component<Props> {
 		Server.postHealthInfo({lifeStyle: dataArr}, function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
+
+			let data = res.data;
+			Server.syncGlobalData(data); //同步global数据
+			//同步进度条
+			this.setState({ percent: globalData.inputProgress });
 		})
 	}
 	//处理数据
@@ -89,8 +142,8 @@ export default class HealthForm2 extends Component<Props> {
 		let self = this;
 		let checksArr = self.state.foodHabitArr;
 		if(checksArr.length > 0){
-			for (var i =0; i < checksArr.length; i++) {
-				var obj = checksArr[i];
+			for (let i =0; i < checksArr.length; i++) {
+				let obj = checksArr[i];
 				if(obj.checkStatus == true){
 					//PUSH到预制数组
 					self.state.foodHabitCheckedArr.push(obj.name)
@@ -102,6 +155,14 @@ export default class HealthForm2 extends Component<Props> {
 	render() {
 		return (
 			<View style={{flex: 1, height: '100%'}}>
+				<WhiteSpace />
+				<View>
+					<View style={{ marginRight: 10, height: 10, flex: 1 }}>
+						<Progress percent={this.state.percent} style={{ height: 10}}/>
+					</View>
+					<Text style={{marginTop:10}}>填写进度 {this.state.percent}%</Text>
+				</View>
+				<WhiteSpace />
 				<ScrollView style={{flex: 1}} automaticallyAdjustContentInsets={false} showsHorizontalScrollIndicator={false}
 				            showsVerticalScrollIndicator={false}>
 					<List renderHeader={() => '体育锻炼'}>

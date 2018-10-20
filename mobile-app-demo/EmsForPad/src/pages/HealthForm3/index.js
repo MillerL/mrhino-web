@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Button, InputItem, List, Radio, WhiteSpace } from 'antd-mobile-rn';
+import Server from '../../utils/Server';
 // import view from './view';
 const RadioItem = Radio.RadioItem;
 
@@ -14,13 +15,18 @@ export default class HealthForm3 extends Component<Props> {
 		};
 	}
 
+  //初始化数据
+	componentDidMount() {
+		let self = this;
+		Server.showAlert('敬请期待');
+	}
 	render() {
 		return (
 			<View>
-				<WhiteSpace>
+				{/*<WhiteSpace>
 					敬请期待
 					<Text style={{fontSize:24,color:'#333',textAlign:'center'}}>敬请期待</Text>
-				</WhiteSpace>
+				</WhiteSpace>*/}
 
 				{/*<List style={{ marginTop: 12 }}>
 					<Text style={{ marginTop: 12 }}>

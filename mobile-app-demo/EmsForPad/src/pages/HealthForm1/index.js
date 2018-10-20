@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {ScrollView, Text, TouchableWithoutFeedback, View, StyleSheet} from 'react-native';
-import {Button, Flex, WhiteSpace, WingBlank, List, InputItem, Radio} from 'antd-mobile-rn';
+import {Button, Flex, WhiteSpace, WingBlank, List, InputItem, Radio, Progress} from 'antd-mobile-rn';
 import Server from "../../utils/Server";
 import globalData from '../../config/globalData';
 import config from '../../config/config';
+import Util from "../../utils/Util";
 // import view from './view';
 const RadioItem = Radio.RadioItem;
 
@@ -13,6 +14,7 @@ export default class HealthForm1 extends Component<Props> {
 		super(props);
 		this.navigation = props.navigation;
 		this.state = {
+			percent: 0,
 			GeneralSymptoms: {
 				Temp: '',//体温
 				PR: '',//脉率
@@ -31,13 +33,12 @@ export default class HealthForm1 extends Component<Props> {
 				intelligenceScore: '',//智力得分
 				emotionScore: '',//抑郁评分得分
 			},
-
-
 		}
 	}
 
 	//同步数据
 	syncData = () => {
+		let self = this;
 		let GeneralSymptoms = globalData.userInfo.GeneralSymptoms[0];
 		GeneralSymptoms.agedLiveStatus = fintIndexInData(config.configData.agedLiveStatus, GeneralSymptoms.agedLiveStatus)
 		GeneralSymptoms.agedSelfCareStatus = fintIndexInData(config.configData.agedSelfCareStatus, GeneralSymptoms.agedSelfCareStatus)
@@ -58,6 +59,8 @@ export default class HealthForm1 extends Component<Props> {
 				}
 			}
 		}
+		//同步进度条
+		this.setState({ percent: globalData.inputProgress });
 	}
 	//上传数据
 	uploadData = () => {
@@ -87,6 +90,10 @@ export default class HealthForm1 extends Component<Props> {
 		Server.postHealthInfo({GeneralSymptoms: dataArr}, function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
+			let data = res.data;
+			Server.syncGlobalData(data); //同步global数据
+			//同步进度条
+			this.setState({ percent: globalData.inputProgress });
 		})
 	}
 
@@ -106,6 +113,15 @@ export default class HealthForm1 extends Component<Props> {
 	render() {
 		return (
 			<View style={{flex: 1, height: '100%'}}>
+				<WhiteSpace />
+				<View>
+					<View style={{ marginRight: 10, height: 10, flex: 1 }}>
+						<Progress percent={this.state.percent} style={{ height: 10}}/>
+					</View>
+					<Text style={{marginTop:10}}>填写进度 {this.state.percent}%</Text>
+				</View>
+				<WhiteSpace />
+
 				<ScrollView style={{flex: 1}} automaticallyAdjustContentInsets={false} showsHorizontalScrollIndicator={false}
 				            showsVerticalScrollIndicator={false}>
 					<List renderHeader={() => '一般'} style={mystyles.flexStyle}>

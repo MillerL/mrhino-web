@@ -4,11 +4,7 @@ const globalData = {
 	currentDataId: '5bc8bb5be695ca75c6a3ec85',  //当前用户数据ID
 	currentCheckUserId: '',  //当前查看的用户身份ID
 	// currentUserId: '',  //当前用户身份ID
-	inputProgress: {
-		total: 40, //总进度
-		currentProgress: 0,  //当前填写进度
-		percent: '' //百分比
-	},
+	inputProgress: 0, //当前填写进度
 
 	userHealthInfoFromEquenment: [],   //通过设备获取的信息被push到这个数组里
 
@@ -28,15 +24,16 @@ const globalData = {
 				Weight: '',//体重
 				waistline: '',//腰围
 				bmi: '',//体质指数
-				agedLiveStatus: 0,//老年人生活状态自我评估
-				agedSelfCareStatus: 0, //老年人生活自理能力自我评估
-				agedCognitive: 0, //老年人认知功能
-				agedEmotionStatus: 0, //老年人情感状态
+				agedLiveStatus: '',//老年人生活状态自我评估
+				agedSelfCareStatus: '', //老年人生活自理能力自我评估
+				agedCognitive: '', //老年人认知功能
+				agedEmotionStatus: '', //老年人情感状态
 				// intelligenceScore: '',//智力得分
 				// emotionScore: '',//抑郁评分得分
 			}],
 		lifeStyle: [{  //生活方式
 			trainRate: '',  //锻炼频率
+
 			exerciseTimeByMin: '',  //锻炼时间/分钟
 			exerciseTimeByYear: '',  //锻炼时间/年
 			exerciseWay: '',  //锻炼方式

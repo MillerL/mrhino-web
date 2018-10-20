@@ -4,6 +4,7 @@ import {ActivityIndicator} from 'antd-mobile-rn';
 import axios from 'axios';
 const qs = require('qs');
 import globalData from '../config/globalData'
+import Util from '../utils/Util'
 
 
 const BASE_URL = 'http://39.106.52.140:1337/Mesuat/';  //服务器API链接
@@ -170,7 +171,9 @@ class Server extends React.Component {
 			globalData.userInfo.lifeStyle = data.lifeStyle;
 		}
 
-		console.log(globalData.userInfo)
+		console.log('与服务器下载同步数据' + globalData.userInfo)
+
+		globalData.inputProgress = Util.updateTotalProgress();
 	}
 
 }
