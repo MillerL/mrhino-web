@@ -102,7 +102,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 		let self = this;
 		console.log('打开摄像')
 		//通过获取设备相册图片
-		ImagePicker.launchImageLibrary(config.image_picker_options, (response) => {
+		ImagePicker.showImagePicker(config.image_picker_options, (response) => {
 			// console.log(response)
 			var image = response.data;  //base64 data 并且encode
 			self.setState({spinner: true});//显示LOADING

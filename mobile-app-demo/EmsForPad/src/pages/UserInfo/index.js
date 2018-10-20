@@ -4,8 +4,12 @@ import {Accordion,WhiteSpace, WingBlank, InputItem, Flex, List,Checkbox,Progress
 import Server from '../../utils/Server'
 import globalData from '../../config/globalData'
 import axios from "axios/index";
+import config from "../../config/config";
 const Item = List.Item;
 const Brief = Item.Brief;
+
+let generalSymptomsArr =[]
+let lifeStyleArr =[]
 
 export default class UserInfo extends Component{
 	static navigationOptions = {
@@ -21,7 +25,9 @@ export default class UserInfo extends Component{
 		this.state = {
 			IdCardNo:'',
 			GeneralSymptoms:[],
-			symptom:''
+			symptom:'',
+			otherSymptom:'',
+			lifeStyle:[]
 		};
 	};
 	//初始化数据
@@ -29,50 +35,63 @@ export default class UserInfo extends Component{
 		let self = this;
 		console.log('currentCheckUserId' + globalData.currentCheckUserId);
 		Server.getUserInfoById(globalData.currentCheckUserId,function (res) {
-			var data = res.data;
+			var data = res.data[0];
 			console.log(data)
+
+
+			generalSymptomsArr = self.dealWithObjData(data.GeneralSymptoms[0],config.GeneralSymptomsString)
+			lifeStyleArr = self.dealWithObjData(data.lifeStyle[0],config.lifeStyleString)
+			console.log(generalSymptomsArr)
+			console.log(lifeStyleArr)
 			self.setState({
 				Name:data.Name,
 				IdCardNo:data.IdCardNo,
-				GeneralSymptoms: data.GeneralSymptoms[0],
-				symptom:data.symptom
+				symptom:data.symptom || '',
+				otherSymptom:data.otherSymptom || '',
+				GeneralSymptoms: generalSymptomsArr,
+				lifeStyle :lifeStyleArr
 			})
 		})
+	}
+
+	dealWithObjData = (obj,stringArr)=>{
+		let newArr = [];
+		for(i in obj){
+			let mykey = stringArr[i];
+			let newObj ={
+				name:mykey,
+				value:obj[i]
+			}
+			newArr.push(newObj);
+		}
+		return newArr;
 	}
 	render() {
 		return (
 			<View style={{ flex: 1 ,height:'100%'}}>
 				<ScrollView style={{ flex: 1}} automaticallyAdjustContentInsets={false} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
 					<List renderHeader={() => '用户信息'} >
+						<Item extra={this.state.Name} multipleLine>姓名</Item>
+						<Item extra={this.state.IdCardNo} multipleLine>ID</Item>
+						<Item extra={this.state.symptom} multipleLine>症状</Item>
+						<Item extra={this.state.otherSymptom} multipleLine>其他</Item>
 					</List>
-					<Accordion onChange={this.onChange} defaultActiveKey="2">
-						<Accordion.Panel header="ID">
-							<List>
-								<List.Item>{this.state.IdCardNo}</List.Item>
-							</List>
-						</Accordion.Panel>
-						<Accordion.Panel header="姓名">
-							<List>
-								<List.Item>{this.state.Name}</List.Item>
-							</List>
-						</Accordion.Panel>
-						<Accordion.Panel header="症状">
-							<List>
-								<List.Item>{this.state.symptom}</List.Item>
-							</List>
-						</Accordion.Panel>
-					</Accordion>
+
 					<List renderHeader={() => '一般症状'} >
-						<Item extra={this.state.GeneralSymptoms.HeightM} multipleLine>身高</Item>
-						<Item extra={this.state.GeneralSymptoms.NibpAver} multipleLine>血压</Item>
-						<Item extra={this.state.GeneralSymptoms.Temp} multipleLine>体温</Item>
-						<Item extra={this.state.GeneralSymptoms.PR} multipleLine>脉率</Item>
-						<Item extra={this.state.GeneralSymptoms.Weight} multipleLine>体重</Item>
-						<Item extra={this.state.GeneralSymptoms.waistline} multipleLine>腰围</Item>
-						<Item extra={this.state.GeneralSymptoms.agedLiveStatus} multipleLine>老年人生活状态自我评估</Item>
-						<Item extra={this.state.GeneralSymptoms.agedSelfCareStatus} multipleLine>老年人生活自理能力自我评估</Item>
-						<Item extra={this.state.GeneralSymptoms.agedCognitive} multipleLine>老年人认知功能</Item>
-						<Item extra={this.state.GeneralSymptoms.agedEmotionStatus} multipleLine>老年人情感状态</Item>
+						{
+							this.state.GeneralSymptoms.map((item,id)=>{
+							return(
+								<Item key={id} extra={item.value} multipleLine>{item.name}</Item>
+							)
+						})}
+					</List>
+					<List renderHeader={() => '生活方式'} >
+						{
+							this.state.lifeStyle.map((item,id)=>{
+								return(
+									<Item key={id} extra={item.value} multipleLine>{item.name}</Item>
+								)
+							})}
 					</List>
 				</ScrollView>
 

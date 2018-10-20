@@ -28,8 +28,8 @@ const globalData = {
 				agedSelfCareStatus: '', //老年人生活自理能力自我评估
 				agedCognitive: '', //老年人认知功能
 				agedEmotionStatus: '', //老年人情感状态
-				// intelligenceScore: '',//智力得分
-				// emotionScore: '',//抑郁评分得分
+				intelligenceScore: '',//智力得分
+				emotionScore: '',//抑郁评分得分
 			}],
 		lifeStyle: [{  //生活方式
 			trainRate: '',  //锻炼频率

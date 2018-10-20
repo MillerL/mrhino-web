@@ -175,7 +175,35 @@ class Server extends React.Component {
 
 		globalData.inputProgress = Util.updateTotalProgress();
 	}
-
+	//同步设备数据到本地
+	static syncEquipmentToGlobalData(data){
+		var ItemList = data.ItemList;
+		let generalSymptoms= globalData.userInfo.GeneralSymptoms[0];
+		for (var i = 0; i < ItemList.length; i++) {
+			var obj = ItemList[i];
+			if(obj['ItemCode'] == 'Height'){  //身高
+				generalSymptoms.Height = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'Weight'){ //身高
+				generalSymptoms.Weight = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'Temp'){ //体温
+				generalSymptoms.Temp = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'NibpAver'){ //平均压
+				generalSymptoms.NibpAver = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'HR'){ //心率
+				generalSymptoms.HR = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'PR'){ //脉率
+				generalSymptoms.PR = obj['ReportValue']
+			}
+			if(obj['ItemCode'] == 'Resp'){ //呼吸率
+				generalSymptoms.Resp = obj['ReportValue']
+			}
+		}
+	}
 }
 
 module.exports = Server

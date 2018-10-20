@@ -54,7 +54,17 @@ export default class Home extends Component {
 		let self = this;
 		console.log('打开摄像')
 		//通过获取设备相册图片
-		ImagePicker.launchImageLibrary(config.image_picker_options, (response) => {
+		ImagePicker.showImagePicker(config.image_picker_options, (response) => {
+			var image = response.data;  //base64 data 并且encode
+			var fileSize = response.fileSize; //文件体积
+
+			self.setState({spinner: true});//显示LOADING
+			//获取图片上面的文字
+			BaiduOcrServer.getIdInfoByOcr(image, function (carId,name) {
+				self.setState({idNum:carId,Name:name,spinner: false})
+			})
+		})
+		/*ImagePicker.launchImageLibrary(config.image_picker_options, (response) => {
 			// console.log(response)
 			var image = response.data;  //base64 data 并且encode
 			var fileSize = response.fileSize; //文件体积
@@ -64,7 +74,7 @@ export default class Home extends Component {
 			BaiduOcrServer.getIdInfoByOcr(image, function (carId,name) {
 				self.setState({idNum:carId,Name:name,spinner: false})
 			})
-		});
+		});*/
 		/*ImagePicker.launchCamera(options, (response) => {
 			// Same code as in above section!
 			console.log(response)
@@ -84,6 +94,7 @@ export default class Home extends Component {
 				self.setState({spinner: false});//关闭LOADING
 				//获取数据成功,把获取到的设备数据存到 globalData
 				globalData.userHealthInfoFromEquenment.push(data);
+				Server.syncEquipmentToGlobalData(data);
 				addNewUser(cardId,Name);
 			},function (error) {
 					self.setState({spinner: false});//关闭LOADING
