@@ -51,6 +51,7 @@ class Home extends Component {
 		this.props.history.push('/users')
 	}
 
+
 	//获取信息
 	clickGetRequest() {
 		// Modal.alert('父兄打算','大')
@@ -231,8 +232,7 @@ class Home extends Component {
 
 						</Flex.Item>
 					</Flex>
-					{/*<WhiteSpace size="lg" />*/}
-
+					
 					{/*<div className="sub-title">Wrap</div>*/}
 					<Flex wrap="wrap"></Flex>
 				</div>

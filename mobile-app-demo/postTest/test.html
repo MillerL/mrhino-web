@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<script type="text/javascript" src="jquery-1.12.0.min.js"></script>
+	<script type="text/javascript" src="mock-min.js"></script>
+
+</head>
+<body>
+<div class="dasds"></div>
+<input type="text">
+
+<script>
+	$(document).ready(function () {
+
+		for (var i = 0; i < 100; i++) {
+			var Random = Mock.Random
+			var name = Random.cname();
+			var id = String(Random.natural());
+			var data = {
+				Name: name,
+				IdCardNo: id
+			}
+			console.log(data)
+
+			$.ajax({
+				url: 'http://39.106.52.140:1337/Mesuat/',
+				type: 'post',
+				dataType: 'json',
+				data: data
+			}).done(function (data) {
+			});
+		}
+
+	})
+</script>
+</body>
+</html>

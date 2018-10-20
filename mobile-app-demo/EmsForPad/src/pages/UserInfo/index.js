@@ -38,9 +38,12 @@ export default class UserInfo extends Component{
 			var data = res.data[0];
 			console.log(data)
 
-
-			generalSymptomsArr = self.dealWithObjData(data.GeneralSymptoms[0],config.GeneralSymptomsString)
-			lifeStyleArr = self.dealWithObjData(data.lifeStyle[0],config.lifeStyleString)
+			if(data.GeneralSymptoms){
+				generalSymptomsArr = self.dealWithObjData(data.GeneralSymptoms[0],config.GeneralSymptomsString)
+			}
+			if(data.lifeStyle){
+				lifeStyleArr = self.dealWithObjData(data.lifeStyle[0],config.lifeStyleString)
+			}
 			console.log(generalSymptomsArr)
 			console.log(lifeStyleArr)
 			self.setState({
