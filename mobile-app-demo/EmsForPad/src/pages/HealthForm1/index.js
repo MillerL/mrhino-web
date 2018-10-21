@@ -46,7 +46,7 @@ export default class HealthForm1 extends Component<Props> {
 		GeneralSymptoms.agedEmotionStatus = fintIndexInData(config.configData.agedEmotionStatus, GeneralSymptoms.agedEmotionStatus)
 
 		console.log(GeneralSymptoms);
-		this.setState({GeneralSymptoms: GeneralSymptoms})
+		self.setState({GeneralSymptoms: GeneralSymptoms})
 
 		function fintIndexInData(arr, value) {
 			if (value != '') {
@@ -60,7 +60,7 @@ export default class HealthForm1 extends Component<Props> {
 			}
 		}
 		//同步进度条
-		this.setState({ percent: globalData.inputProgress });
+		self.setState({ percent: globalData.inputProgress });
 	}
 	//上传数据
 	uploadData = () => {
@@ -93,7 +93,7 @@ export default class HealthForm1 extends Component<Props> {
 			let data = res.data;
 			Server.syncGlobalData(data); //同步global数据
 			//同步进度条
-			this.setState({ percent: globalData.inputProgress });
+			self.setState({ percent: globalData.inputProgress });
 		})
 	}
 

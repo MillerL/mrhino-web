@@ -90,9 +90,10 @@ export default class Home extends Component {
 		if (cardId != '') {
 			//然后通过身份证ID获取设备信息
 			self.setState({spinner: true});//显示LOADING
-			Server.getUserHealthInfoById(cardId,function (data) {
+			Server.getUserHealthInfoById(cardId,function (res) {
 				self.setState({spinner: false});//关闭LOADING
 				//获取数据成功,把获取到的设备数据存到 globalData
+				let data = res.data;
 				globalData.userHealthInfoFromEquenment.push(data);
 				Server.syncEquipmentToGlobalData(data);
 				addNewUser(cardId,Name);

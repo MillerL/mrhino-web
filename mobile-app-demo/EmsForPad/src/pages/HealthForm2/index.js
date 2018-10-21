@@ -100,7 +100,7 @@ export default class HealthForm2 extends Component<Props> {
 			}
 		}
 		//同步进度条
-		this.setState({ percent: globalData.inputProgress });
+		self.setState({ percent: globalData.inputProgress });
 	}
   //上传数据
 	uploadData = () => {
@@ -133,7 +133,7 @@ export default class HealthForm2 extends Component<Props> {
 			let data = res.data;
 			Server.syncGlobalData(data); //同步global数据
 			//同步进度条
-			this.setState({ percent: globalData.inputProgress });
+			self.setState({ percent: globalData.inputProgress });
 		})
 	}
 	//处理数据

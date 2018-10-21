@@ -1,6 +1,6 @@
 // 引入依赖
 import React from "react";
-import {StackNavigator} from "react-navigation";
+import {StackNavigator,createStackNavigator} from "react-navigation";
 
 // 引入页面组件
 import HomeTab from "../pages/HomeTab";
@@ -12,7 +12,7 @@ import Home from "../pages/Home";
 import Test from "../pages/Test";
 
 // 配置路由
-const AppNavigator = StackNavigator({
+const AppNavigator = createStackNavigator({
 	Home: {
 		screen: Home
 	},

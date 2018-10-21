@@ -51,7 +51,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 			self.setState({otherSymptom:otherSymptom});
 		}
 		//同步进度条
-		this.setState({ percent: globalData.inputProgress });
+		self.setState({ percent: globalData.inputProgress });
 	}
 	//上传数据
 	uploadData =()=>{
@@ -75,7 +75,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 				let data=res.data;
 				Server.syncGlobalData(data); //同步global数据
 				//同步进度条
-				this.setState({ percent: globalData.inputProgress });
+				self.setState({ percent: globalData.inputProgress });
 			})
 		}else {
 			Server.showAlert('输入值为空');

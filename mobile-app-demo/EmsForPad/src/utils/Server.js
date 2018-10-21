@@ -171,8 +171,9 @@ class Server extends React.Component {
 			globalData.userInfo.lifeStyle = data.lifeStyle;
 		}
 
-		console.log('与服务器下载同步数据' + globalData.userInfo)
+		// console.log('与服务器下载同步数据' + globalData.userInfo)
 
+		console.log('进度' + Util.updateTotalProgress())
 		globalData.inputProgress = Util.updateTotalProgress();
 	}
 	//同步设备数据到本地
