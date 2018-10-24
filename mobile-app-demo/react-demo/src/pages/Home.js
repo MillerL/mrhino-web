@@ -19,7 +19,7 @@ const defaultIp = GETMesuat_URL; //默认IP
 // const defaultIp = 'http://192.168.1.101:23412'; //默认IP
 // const GETINFO_URL = '/httpServer/getHealthData';  //本地默认获取数据地址
 // const POSTINFO_URL = 'http://39.106.52.140:1337/Mesuaposttest';
-const TEST_URL = 'http://192.168.1.221:23412/httpServer/getHealthData';
+const TEST_URL = 'http://192.168.199.176:23412/httpServer/getHealthData';
 
 function closest(el, selector) {
 	const matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;

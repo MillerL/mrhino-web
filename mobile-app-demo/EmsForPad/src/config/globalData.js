@@ -10,8 +10,8 @@ const globalData = {
 
 	/*通过Pad输入获取的数据*/
 	userInfo: {
-		Name: '梁明飞',//用户姓名
-		IdCardNo: '371525198611103734',//用户身份证ID
+		Name: '',//用户姓名
+		IdCardNo: '370211198205140059',//用户身份证ID
 		symptom: '', //症状
 		otherSymptom: '', //其他症状
 		GeneralSymptoms: [  //一般症状

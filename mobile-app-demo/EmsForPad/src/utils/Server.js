@@ -8,7 +8,8 @@ import Util from '../utils/Util'
 
 
 const BASE_URL = 'http://39.106.52.140:1337/Mesuat/';  //服务器API链接
-const Equipment_URL = 'http://192.168.1.221:23412/httpServer/getHealthData'; //本地设备API链接，需用本地网络
+const Equipment_ipAddress = 'http://192.168.199.176'; //本地设备API链接，需用本地网络
+const Equipment_extra = ':23412/httpServer/getHealthData';
 const Equipment_token = 'fawehdty7319isbs'; //设备固定token,
 
 class Server extends React.Component {
@@ -17,19 +18,24 @@ class Server extends React.Component {
 	}
 
 	//拿到已经获取到的身份证ID去请求设备数据
-	static getUserHealthInfoById(cardId, callback, callbackError) {
-		var mydata = qs.stringify({
+	static getUserHealthInfoById(cardId, ipAddress, callback, callbackError) {
+		console.log('取到的身份证ID去请求设备数据')
+		let mydata = {
 			Token: Equipment_token,
 			IdCardNo: cardId
-		});
-		/*const options = {
+		};
+		let options = {
 			method: 'POST',
 			headers: {'content-type': 'application/x-www-form-urlencoded'},
 			data: mydata,
-			Equipment_URL,
-		};*/
-		axios.post(Equipment_URL,mydata).then((response) => {
-				// var string = JSON.stringify(response);
+			url: Equipment_ipAddress + Equipment_extra,
+		};
+		if(ipAddress != ''){
+			options.url = ipAddress + Equipment_extra;
+		}
+
+		console.log(options)
+		axios(options).then((response) => {
 				console.log(response);
 				callback(response);
 				/*var ResultCode = response.ResultCode;
@@ -111,6 +117,26 @@ class Server extends React.Component {
 				Alert.alert('提示', error);
 			});
 	}
+	//post 创建新用户请求 ++ 设备数据
+	static postNewUserWithEquimentData(cardId, Name, equimentData, callback) {
+		//先把设备数据同步到 global data
+		Server.syncEquipmentToGlobalData(equimentData);
+		let generalSymptoms= globalData.userInfo.GeneralSymptoms;
+		var data = {
+			IdCardNo: cardId,
+			Name:Name,
+			GeneralSymptoms:generalSymptoms
+		}
+		axios.post(BASE_URL, data)
+			.then(function (response) {
+				// console.log(response);
+				callback(response)
+			})
+			.catch(function (error) {
+				// console.log(error);
+				Alert.alert('提示', error);
+			});
+	}
 
 	//get 拉取用户列表
 	static getUserList(callback) {
@@ -124,20 +150,6 @@ class Server extends React.Component {
 				Alert.alert('提示', error);
 			});
 	}
-
-	/*//get 拉取用户信息
-	static getUserInfo(id, callback) {
-		console.log(BASE_URL + id)
-		axios.get(BASE_URL + id)
-			.then(function (response) {
-				// console.log(response);
-				callback(response)
-			})
-			.catch(function (error) {
-				// console.log(error);
-				Alert.alert('提示', error);
-			});
-	}*/
 
 	//put 更新个人健康档案
 	static postHealthInfo(data, callback) {
@@ -172,6 +184,10 @@ class Server extends React.Component {
 		}
 
 		// console.log('与服务器下载同步数据' + globalData.userInfo)
+		//如果有设备数据，则同步到 global data 里
+		if(globalData.userHealthInfoFromEquenment.length > 0){
+			Server.syncEquipmentToGlobalData(globalData.userHealthInfoFromEquenment[0]);
+		}
 
 		console.log('进度' + Util.updateTotalProgress())
 		globalData.inputProgress = Util.updateTotalProgress();
@@ -204,6 +220,8 @@ class Server extends React.Component {
 				generalSymptoms.Resp = obj['ReportValue']
 			}
 		}
+		console.log(generalSymptoms)
+		console.log(globalData.userInfo.GeneralSymptoms[0])
 	}
 }
 
