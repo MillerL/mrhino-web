@@ -10,6 +10,7 @@ import UserList from "../UserList";
 // import CameraButton from "../../utils/CameraButton";
 import ImagePicker from 'react-native-image-picker';
 import config from '../../config/config';
+import Storage from '../../utils/DeviceStorage';
 
 
 export default class Home extends Component {
@@ -191,16 +192,28 @@ export default class Home extends Component {
 
 	/*设置IP地址*/
 	setIpAddress = ()=>{
-		this.setPopup.dismiss();
+		let self = this;
+        self.setPopup.dismiss();
+		//存到本地
+		if(self.ipAddress !== ''){
+            Storage.update('ipAddress',self.state.ipAddress)
+        }
 	}
 
-
+	//初始化
 	componentWillMount(){
 		let self = this;
+		//取本地数据 IP
+        Storage.get('ipAddress',function (value) {
+            self.setState({ipAddress:value})
+        }),function (error) {
+            console.log(error);
+        }
 		self.setState({
 			idNum:globalData.userInfo.IdCardNo,
 			Name:globalData.userInfo.Name
 		})
+
 	}
 	render() {
 		return (
