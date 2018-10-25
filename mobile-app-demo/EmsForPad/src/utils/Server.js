@@ -5,6 +5,7 @@ import axios from 'axios';
 const qs = require('qs');
 import globalData from '../config/globalData'
 import Util from '../utils/Util'
+import config from "../config/config";
 
 
 const BASE_URL = 'http://39.106.52.140:1337/Mesuat/';  //服务器API链接
@@ -38,48 +39,7 @@ class Server extends React.Component {
 		axios(options).then((response) => {
 				console.log(response);
 				callback(response);
-				/*var ResultCode = response.ResultCode;
-				if (ResultCode !== 0) {
-					//结果代码。0：请求成功；其它：异常
-				} else {
 
-				}
-				callback();*/
-				/*if (response.status == 200) {
-						let data = response.data[0];
-						console.log(data);
-						let newData = {
-								Message: data.Message,
-								ResultCode: data.ResultCode,
-								Name: data.Name,
-								Gender: data.Gender,
-								DoctorName: data.DoctorName,
-								InstrumentName: data.InstrumentName,
-								ItemList: data.ItemList,
-								CheckDate: data.CheckDate,
-								IdCardNo: data.IdCardNo
-						}
-						console.log(newData)
-						this.setState({userInfo: newData});
-						//拿到数据随即POST到Mesuaposttest
-						axios(POSTINFO_URL, {
-								method: 'POST',
-								data: newData,
-								headers: {
-										// 'Authorization': `bearer ${token}`,
-										'Content-Type': 'application/json'
-								}
-						}).then(response => {
-
-								this.showModal2();
-								console.log(response)
-						})
-
-				} else {
-						//返回错误
-						this.showModal('modal1');
-						console.log(response)
-				}*/
 			},
 			(error) => {
 				console.log(error)
@@ -140,7 +100,7 @@ class Server extends React.Component {
 
 	//get 拉取用户列表
 	static getUserList(callback) {
-		axios.get(BASE_URL)
+		axios.get(BASE_URL +'?_limit=40&_sort=createdAt:desc')
 			.then(function (response) {
 				// console.log(response);
 				callback(response)
@@ -172,15 +132,39 @@ class Server extends React.Component {
 		globalData.userInfo.IdCardNo = data.IdCardNo;
 		if(data.symptom){
 			globalData.userInfo.symptom = data.symptom;
+		}else {
+			globalData.userInfo.symptom = '';
 		}
 		if(data.otherSymptom){
 			globalData.userInfo.otherSymptom = data.otherSymptom;
+		}else {
+			globalData.userInfo.otherSymptom = '';
 		}
 		if(data.GeneralSymptoms){
 			globalData.userInfo.GeneralSymptoms = data.GeneralSymptoms;
+		}else {
+			cleanData(globalData.userInfo.GeneralSymptoms);
 		}
 		if(data.lifeStyle){
 			globalData.userInfo.lifeStyle = data.lifeStyle;
+		}else {
+			cleanData(globalData.userInfo.lifeStyle);
+		}
+
+		for (var j = 0; j < config.configLifeStyle.foodHabit.length; j++) {
+			var obj = config.configLifeStyle.foodHabit[j];
+			obj.checkStatus = false
+		}
+		for (var j = 0; j < config.checkList.length; j++) {
+			var obj = config.checkList[j];
+			obj.checkStatus = false
+		}
+
+		function cleanData(arr) {
+			var data = arr[0];
+			for(let j in data){
+				data[j] = ''
+			}
 		}
 
 		// console.log('与服务器下载同步数据' + globalData.userInfo)
@@ -191,6 +175,7 @@ class Server extends React.Component {
 
 		console.log('进度' + Util.updateTotalProgress())
 		globalData.inputProgress = Util.updateTotalProgress();
+		console.log(globalData)
 	}
 	//同步设备数据到本地
 	static syncEquipmentToGlobalData(data){

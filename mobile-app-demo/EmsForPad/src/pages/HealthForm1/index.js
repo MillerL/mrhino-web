@@ -40,11 +40,18 @@ export default class HealthForm1 extends Component<Props> {
 	syncData = () => {
 		let self = this;
 		let GeneralSymptoms = globalData.userInfo.GeneralSymptoms[0];
-		GeneralSymptoms.agedLiveStatus = fintIndexInData(config.configData.agedLiveStatus, GeneralSymptoms.agedLiveStatus)
-		GeneralSymptoms.agedSelfCareStatus = fintIndexInData(config.configData.agedSelfCareStatus, GeneralSymptoms.agedSelfCareStatus)
-		GeneralSymptoms.agedCognitive = fintIndexInData(config.configData.agedCognitive, GeneralSymptoms.agedCognitive)
-		GeneralSymptoms.agedEmotionStatus = fintIndexInData(config.configData.agedEmotionStatus, GeneralSymptoms.agedEmotionStatus)
-
+		if(GeneralSymptoms.agedLiveStatus !=''){
+			GeneralSymptoms.agedLiveStatus = fintIndexInData(config.configData.agedLiveStatus, GeneralSymptoms.agedLiveStatus)
+		}
+		if(GeneralSymptoms.agedSelfCareStatus !=''){
+			GeneralSymptoms.agedSelfCareStatus = fintIndexInData(config.configData.agedSelfCareStatus, GeneralSymptoms.agedSelfCareStatus)
+		}
+		if(GeneralSymptoms.agedCognitive !=''){
+			GeneralSymptoms.agedCognitive = fintIndexInData(config.configData.agedCognitive, GeneralSymptoms.agedCognitive)
+		}
+		if(GeneralSymptoms.agedEmotionStatus !=''){
+			GeneralSymptoms.agedEmotionStatus = fintIndexInData(config.configData.agedEmotionStatus, GeneralSymptoms.agedEmotionStatus)
+		}
 		console.log(GeneralSymptoms);
 		self.setState({GeneralSymptoms: GeneralSymptoms})
 
@@ -65,29 +72,41 @@ export default class HealthForm1 extends Component<Props> {
 	//上传数据
 	uploadData = () => {
 		let self = this;
-		var myData = self.state.GeneralSymptoms;
+		var myData = {
+			Temp: self.state.GeneralSymptoms.Temp,//体温
+			PR: self.state.GeneralSymptoms.PR,//脉率
+			Resp: self.state.GeneralSymptoms.NibpAver, //呼吸频率
+			NibpAver: self.state.GeneralSymptoms.NibpAver,//血压（平均压）
+			Height: self.state.GeneralSymptoms.Height,//身高
+			Weight: self.state.GeneralSymptoms.Weight,//体重
+			waistline: self.state.GeneralSymptoms.waistline,//腰围
+			bmi: self.state.GeneralSymptoms.bmi,//体质指数
+		};
 		//手动修改单选的值
-		if (myData.agedLiveStatus != '') {
-			var index = parseInt(myData.agedLiveStatus);
-			myData.agedLiveStatus = config.configData.agedLiveStatus[index]//老年人生活状态自我评估
+		if (self.state.GeneralSymptoms.agedLiveStatus != '') {
+			var index = self.state.GeneralSymptoms.agedLiveStatus;
+			myData.agedLiveStatus = config.configData.agedLiveStatus[parseInt(index)]//老年人生活状态自我评估
 		}
-		if (myData.agedSelfCareStatus != '') {
-			var index = parseInt(myData.agedSelfCareStatus);
-			myData.agedSelfCareStatus = config.configData.agedSelfCareStatus[index]//老年人生活自理能力自我评估
+		if (self.state.GeneralSymptoms.agedSelfCareStatus != '') {
+			var index = self.state.GeneralSymptoms.agedSelfCareStatus;
+			myData.agedSelfCareStatus = config.configData.agedSelfCareStatus[parseInt(index)]//老年人生活自理能力自我评估
 		}
-		if (myData.agedCognitive != '') {
-			var index = parseInt(myData.agedCognitive);
-			myData.agedCognitive = config.configData.agedCognitive[index]//老年人认知功能
+		if (self.state.GeneralSymptoms.agedCognitive != '') {
+			var index = self.state.GeneralSymptoms.agedCognitive;
+			myData.agedCognitive = config.configData.agedCognitive[parseInt(index)]//老年人认知功能
 		}
-		if (myData.agedEmotionStatus != '') {
-			var index = parseInt(myData.agedEmotionStatus);
-			myData.agedEmotionStatus = config.configData.agedEmotionStatus[index]//老年人情感状态]
+		if (self.state.GeneralSymptoms.agedEmotionStatus != '') {
+			var index = self.state.GeneralSymptoms.agedEmotionStatus;
+			myData.agedEmotionStatus = config.configData.agedEmotionStatus[parseInt(index)]//老年人情感状态]
 		}
 
 		let dataArr = [];
 		dataArr.push(myData)
 		console.log(dataArr);
-		Server.postHealthInfo({GeneralSymptoms: dataArr}, function (res) {
+		Server.postHealthInfo({
+			Name:globalData.userInfo.Name,
+			GeneralSymptoms: dataArr
+		}, function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
 			let data = res.data;

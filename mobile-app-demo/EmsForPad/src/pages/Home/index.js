@@ -36,7 +36,6 @@ export default class Home extends Component {
 	}
 	//显示设置浮层
 	showSetPopup = () => {
-		console.log('setPopup')
 		this.setPopup.show();
 	}
 	//点击用户卡片
@@ -83,9 +82,10 @@ export default class Home extends Component {
 	//创建新用户
 	creatNewUser = () =>{
 		let self = this;
-		let cardId = this.state.idNum;
-		let Name = this.state.Name;
+		let cardId = self.state.idNum;
+		let Name = self.state.Name;
 		console.log('cardId=' + cardId);
+		console.log('Name=' + Name);
 		if (cardId != '') {
 			//然后通过身份证ID获取设备信息
 			self.setState({spinner: true});//显示LOADING
@@ -95,14 +95,22 @@ export default class Home extends Component {
 				self.setState({spinner: false});//关闭LOADING
 				//获取数据成功,把获取到的设备数据存到 globalData
 				let data = res.data;
-				globalData.userHealthInfoFromEquenment.push(data);
-				// Server.syncEquipmentToGlobalData(data);
-
-				Alert.alert('提示', '获取设备数据成功',
-					[{text: 'OK', onPress: () => addNewUserWithEquimentData(cardId,Name,data)}], { cancelable: false });
+				if(data.ResultCode != 0 ){
+					//异常
+					self.popupDialog.dismiss();
+					Alert.alert('提示', data.Message,
+						[{text: 'OK', onPress: () => addNewUserNoEquimentData(cardId,Name)}], { cancelable: false });
+				}else {
+					globalData.userHealthInfoFromEquenment.push(data);
+					self.popupDialog.dismiss();
+					Alert.alert('提示', '获取设备数据成功',
+						[{text: 'OK', onPress: () => addNewUserWithEquimentData(cardId,Name,data)}], { cancelable: false });
+				}
 			},function (error) {
-					self.setState({spinner: false});//关闭LOADING
-					//获取失败 --没有用户信息
+				/*网络有问题*/
+				self.setState({spinner: false});//关闭LOADING
+				//获取失败 --没有用户信息
+					this.popupDialog.dismiss();
 					Alert.alert('提示', '无法获取设备数据',
 					[{text: 'OK', onPress: () => addNewUserNoEquimentData(cardId,Name)}], { cancelable: false });
 			})
@@ -154,6 +162,8 @@ export default class Home extends Component {
 					console.log('有用户数据');
 					Server.syncGlobalData(data[0]);
 					globalData.currentDataId = data[0].id;
+					globalData.userInfo.Name = Name;
+					globalData.userInfo.IdCardNo = cardId;
 					self.props.navigation.navigate('HomeTab');//跳转填写健康档案
 				}else {
 					//该用户不存在-创建用户
@@ -168,6 +178,8 @@ export default class Home extends Component {
 						globalData.currentDataId = id;
 						globalData.userInfo.Name = Name;
 						globalData.userInfo.IdCardNo = cardId;
+						console.log(res);
+						console.log(globalData)
 						self.props.navigation.navigate('HomeTab');//跳转填写健康档案
 
 					})
@@ -179,7 +191,7 @@ export default class Home extends Component {
 
 	/*设置IP地址*/
 	setIpAddress = ()=>{
-
+		this.setPopup.dismiss();
 	}
 
 
@@ -241,9 +253,11 @@ export default class Home extends Component {
 					</View>
 
 				{/*右下角按钮*/}
-				<TouchableHighlight onPress={this.showSetPopup}>
-					<Image style={styles.setIcon} source={require('../../assets/info.png')}/>
-				</TouchableHighlight>
+				<View style={styles.setIcon}>
+					<TouchableHighlight onPress={this.showSetPopup}>
+						<Image style={{width:'100%',height:'100%'}} source={require('../../assets/info.png')}/>
+					</TouchableHighlight>
+				</View>
 
 				<PopupDialog width={0.4} height={300} dialogTitle={<DialogTitle title="创建用户"/>} ref={(popupDialog) => {
 					this.popupDialog = popupDialog;
@@ -279,7 +293,7 @@ export default class Home extends Component {
 				</PopupDialog>
 
 				{/*	//设置浮层*/}
-				<PopupDialog width={0.4} height={400} dialogTitle={<DialogTitle title="设置"/>} ref={(setPopup) => {
+				<PopupDialog width={0.4} height={300} dialogTitle={<DialogTitle title="设置"/>} ref={(setPopup) => {
 					this.setPopup = setPopup;
 				}}>
 					<View style={{
@@ -295,7 +309,7 @@ export default class Home extends Component {
 							value={this.state.ipAddress}
 							onChange={(value: any) => {
 								this.setState({
-									idNum: value,
+									ipAddress: value,
 								});
 							}}
 							placeholder="http://192.168.199.176"
@@ -333,6 +347,7 @@ var styles = StyleSheet.create({
 		bottom:30,
 		right:30,
 		width: 60,
-		height: 60
+		height: 60,
+		zIndex:999
 	}
 })

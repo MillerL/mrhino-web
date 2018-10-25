@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Text, View, Image, ViewStyle, StyleSheet, Alert,TouchableHighlight} from 'react-native';
 import {WhiteSpace, WingBlank, InputItem, Flex, List, Checkbox,Progress,Button,TextareaItem} from 'antd-mobile-rn';
 // import view from '../../config/globalData';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Server from '../../utils/Server';
 import globalData from '../../config/globalData';
 import BaiduOcrServer from "../../utils/BaiduOcrServer";
@@ -18,6 +19,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 		super(props, context);
 		this.navigation = props.navigation;
 		this.state = {
+			spinner: false, //LOADING
 			checksArr:config.checkList, //多选的数组对象
 			symptomArray: [], //症状数组
 			symptom: '', //症状
@@ -46,6 +48,13 @@ export default class HealthForm0 extends React.Component<any, any> {
 				}
 			}
 			self.setState({checksArr:config.checkList});
+		}else {
+			//清空
+			for (var j = 0; j < config.checkList.length; j++) {
+				var obj = config.checkList[j];
+				obj.checkStatus = false
+			}
+			self.setState({checksArr:config.checkList});
 		}
 		if(otherSymptom !== ''){
 			self.setState({otherSymptom:otherSymptom});
@@ -65,6 +74,7 @@ export default class HealthForm0 extends React.Component<any, any> {
 			var pageString = sArray.join();
 			console.log(pageString)
 			var data = {
+				Name:globalData.userInfo.Name,
 				symptom : pageString,
 				otherSymptom:otherSymptom
 			}
@@ -104,21 +114,30 @@ export default class HealthForm0 extends React.Component<any, any> {
 		//通过获取设备相册图片
 		ImagePicker.showImagePicker(config.image_picker_options, (response) => {
 			// console.log(response)
-			var image = response.data;  //base64 data 并且encode
-			self.setState({spinner: true});//显示LOADING
-			//获取图片上面的文字
-			BaiduOcrServer.getTextInfoByOcr(image, function (words) {
-				console.log(words)
-				let wordsArr =[];
-				if(words.length >0){
-					for (var i = 0; i < words.length; i++) {
-						var obj = words[i];
-						wordsArr.push(obj.words +',')
+			if (response.didCancel) {
+				console.log('User cancelled image picker');
+			} else if (response.error) {
+				console.log('ImagePicker Error: ', response.error);
+			} else if (response.customButton) {
+				console.log('User tapped custom button: ', response.customButton);
+			} else {
+				var image = response.data;  //base64 data 并且encode
+				self.setState({spinner: true});//显示LOADING
+				//获取图片上面的文字
+				BaiduOcrServer.getTextInfoByOcr(image, function (words) {
+					console.log(words)
+					let wordsArr =[];
+					if(words.length >0){
+						for (var i = 0; i < words.length; i++) {
+							var obj = words[i];
+							wordsArr.push(obj.words +',')
+						}
 					}
-				}
-				let wordStr = wordsArr.join();
-				self.setState({otherSymptom: wordStr})  //识别其他症状
-			})
+					let wordStr = wordsArr.join();
+					self.setState({otherSymptom: wordStr,spinner: false})  //识别其他症状
+				})
+			}
+
 		});
 		/*ImagePicker.launchCamera(options, (response) => {
 			// Same code as in above section!
@@ -204,6 +223,12 @@ export default class HealthForm0 extends React.Component<any, any> {
 				<View style={mystyles.fixedBtn}>
 					<Button type="primary" onClick={this.uploadData}>同步</Button>
 				</View>
+
+				<Spinner
+					visible={this.state.spinner}
+					textContent={'Loading...'}
+					textStyle={styles.spinnerTextStyle}
+				/>
 			</View>
 		);
 	}

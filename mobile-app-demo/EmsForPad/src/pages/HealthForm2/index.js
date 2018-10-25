@@ -60,20 +60,33 @@ export default class HealthForm2 extends Component<Props> {
 		console.log('同步数据')
 		let self = this;
 		let lifeStyle = globalData.userInfo.lifeStyle[0];
-		lifeStyle.trainRate = fintIndexInData(config.configLifeStyle.trainRate, lifeStyle.trainRate)
-		lifeStyle.smokingStatus = fintIndexInData(config.configLifeStyle.smokingStatus, lifeStyle.smokingStatus)
-		lifeStyle.drinkingStatus = fintIndexInData(config.configLifeStyle.drinkingStatus, lifeStyle.drinkingStatus)
-		lifeStyle.isOutAlcohol = fintIndexInData(config.configLifeStyle.isOutAlcohol, lifeStyle.isOutAlcohol)
-		lifeStyle.odh = fintIndexInData(config.configLifeStyle.odh, lifeStyle.odh)
-		lifeStyle.poisonType = fintIndexInData(config.configLifeStyle.poisonType, lifeStyle.poisonType)
+		console.log(lifeStyle)
+		if(lifeStyle.trainRate){
+			lifeStyle.trainRate = fintIndexInData(config.configLifeStyle.trainRate, lifeStyle.trainRate)
+		}
+		if(lifeStyle.smokingStatus){
+			lifeStyle.smokingStatus = fintIndexInData(config.configLifeStyle.smokingStatus, lifeStyle.smokingStatus)
+		}
+		if(lifeStyle.drinkingStatus){
+			lifeStyle.drinkingStatus = fintIndexInData(config.configLifeStyle.drinkingStatus, lifeStyle.drinkingStatus)
+		}
+		if(lifeStyle.isOutAlcohol){
+			lifeStyle.isOutAlcohol = fintIndexInData(config.configLifeStyle.isOutAlcohol, lifeStyle.isOutAlcohol)
+		}
+		if(lifeStyle.odh){
+			lifeStyle.odh = fintIndexInData(config.configLifeStyle.odh, lifeStyle.odh)
+		}
+		if(lifeStyle.poisonType){
+			lifeStyle.poisonType = fintIndexInData(config.configLifeStyle.poisonType, lifeStyle.poisonType)
+		}
 		this.setState({lifeStyle: lifeStyle});
-
 		//单选字符串转数字
 		let foodHabit = lifeStyle.foodHabit;
 		console.log(foodHabit);
 
 		//设置饮食习惯
 		if(foodHabit !== ''){
+			console.log('foodHabit 不是空')
 			//字符串转数据-循环匹配
 			let foodHabitArr = foodHabit.split(',');
 			for (let i = 0; i < foodHabitArr.length; i++) {
@@ -86,6 +99,13 @@ export default class HealthForm2 extends Component<Props> {
 				}
 			}
 			self.setState({foodHabitArr:config.configLifeStyle.foodHabit});
+		}else {
+			//清空
+			for (var j = 0; j < config.configLifeStyle.foodHabit.length; j++) {
+				var obj = config.configLifeStyle.foodHabit[j];
+				obj.checkStatus = false
+			}
+			self.setState({checksArr:config.configLifeStyle.foodHabit});
 		}
 
 		function fintIndexInData(arr, value) {
@@ -126,7 +146,7 @@ export default class HealthForm2 extends Component<Props> {
 		let dataArr = [];
 		dataArr.push(myData)
 		console.log(dataArr);
-		Server.postHealthInfo({lifeStyle: dataArr}, function (res) {
+		Server.postHealthInfo({Name:globalData.userInfo.Name,lifeStyle: dataArr}, function (res) {
 			console.log(res)
 			Server.showAlert('同步成功');
 

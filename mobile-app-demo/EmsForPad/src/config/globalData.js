@@ -1,7 +1,7 @@
 const globalData = {
 	// total: 34,
 	// current: 0,
-	currentDataId: '5bc8bb5be695ca75c6a3ec85',  //当前用户数据ID
+	currentDataId: '',  //当前用户数据ID
 	currentCheckUserId: '',  //当前查看的用户身份ID
 	// currentUserId: '',  //当前用户身份ID
 	inputProgress: 0, //当前填写进度
@@ -11,7 +11,7 @@ const globalData = {
 	/*通过Pad输入获取的数据*/
 	userInfo: {
 		Name: '',//用户姓名
-		IdCardNo: '370211198205140059',//用户身份证ID
+		IdCardNo: '',//用户身份证ID
 		symptom: '', //症状
 		otherSymptom: '', //其他症状
 		GeneralSymptoms: [  //一般症状
